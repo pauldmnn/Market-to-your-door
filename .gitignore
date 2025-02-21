@@ -2,7 +2,10 @@ core.Microsoft*
 core.mongo*
 core.python*
 env.py
+*.sqlite3
+*.pyc
 __pycache__/
+.venv
 *.py[cod]
 node_modules/
 .github/
