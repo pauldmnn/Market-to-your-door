@@ -1,0 +1,9 @@
+.search-input {
+    width: 120px;
+    transition: width 0.3s ease-in-out;
+    border-radius: 20px;
+  }
+  
+.search-input:focus {
+    width: 200px;
+  }
