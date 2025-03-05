@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_header %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="product-container">
+        <div class="row">
+            <div class="col">
+                {% if products %}
+                    <ul>
+                        {% for product in products %}
+                            <div class="product-item">
+                                <li>
+                                    {{ product.name }}
+                                    {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                                    {% endif %}
+                                </li>
+                            </div>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No products available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
