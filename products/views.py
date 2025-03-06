@@ -9,21 +9,14 @@ def product_list(request):
     A view to display all products including searching and sorting
     """
 
-    products = Product.objects.all()
-    query = None
-
-    if request.GET:
-        if 'q' in request.GET:
-            query = request.GET('q')
-            if not query:
-                messages.error(request, "No items found. Please try again!")
-                return redirect(reverse('products'))
-            
-            queries = Q(name__icontains=query) | Q(description__icontains=query)
-            products = products.filter(queries)
+    query = request.GET.get('q', '')
+    if query:
+        products = Product.objects.filter(name__icontains=query)
+    else:
+        products = Product.objects.all()
 
     return render(request, 'products/products.html', {
-        'products': products, 'search_term': query
+        'products': products, 'query': query
     })
 
 
