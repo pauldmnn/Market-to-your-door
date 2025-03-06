@@ -41,6 +41,15 @@ header {
     color: aqua;
 }
 
+.product-detail-img {
+    width: 380px; 
+    height: auto; 
+    max-width: 380px;
+    display: block;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
 .search-input {
     width: 120px;
     transition: width 0.3s ease-in-out;
@@ -62,6 +71,10 @@ header {
 }
 
 .product-container {
+    margin-top: 80px;
+}
+
+.name-container {
     margin-top: 80px;
 }
 
