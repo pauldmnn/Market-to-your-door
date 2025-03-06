@@ -8,19 +8,18 @@ def product_list(request):
     """
     A view to display all products including searching, sorting and filtering
     """
+    products = Product.objects.all()
 
     query = request.GET.get('q', '')
+    name_filter = request.GET.get('name', '')
+    category_filter = request.GET.get('category', '')
+    min_price = request.GET.get('min_price', '')
+    max_price = request.GET.get('max_price', '')
+    sort_option = request.GET.get('sort', 'name')
     if query:
         products = Product.objects.filter(name__icontains=query)
+        name_filter = query
     else:
-        products = Product.objects.all()
-
-        #Filtering 
-        name_filter = request.GET.get('name', '')
-        category_filter = request.GET.get('category', '')
-        min_price = request.GET.get('min_price', '')
-        max_price = request.GET.get('max_price', '')
-
         if name_filter:
             products = products.filter(name__icontains=name_filter)
         if category_filter:
@@ -28,22 +27,27 @@ def product_list(request):
         if min_price:
             products = products.filter(price__gte=min_price)
         if max_price:
-            products = products.filter(price__gte=max_price)
+            products = products.filter(price__lte=max_price)
 
-        sort_option = request.GET.get('sort', 'name')
-        if sort_option in ['name', '-name', 'price', '-price', ]:
-            products = products.order_by(sort_option)
-
-    return render(request, 'products/products.html', {
-        'products': products, 
-        'query': query,
+    if sort_option in ['name', '-name', 'price', '-price']:
+        products = products.order_by(sort_option)
+    elif sort_option == 'category':
+        products = products.order_by('category__name')
+    elif sort_option == '-category':
+        products = products.order_by('-category__name')
+       
+    context = {
+        'products': products,
         'name_filter': name_filter,
         'category_filter': category_filter,
         'min_price': min_price,
         'max_price': max_price,
         'sort_option': sort_option,
         'categories': Category.objects.all(),
-    })
+        'query': query,
+    }
+
+    return render(request, 'products/products.html', context)
 
 
 def product_detail(request, slug):
