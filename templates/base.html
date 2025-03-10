@@ -76,7 +76,7 @@
                 </li>
               {% endif %}
               <li class="list-inline-item">
-                <a class="nav-link" href="{ urls 'view_cart'} ">
+                <a class="{% if grand_total %} text-info font-weight-bold {% else %} text-black {% endif %} nav-link" href="{% url 'view_cart' %}">
                   <div class="text-center">
                     <div><i class="fa-solid fa-cart-shopping"></i></div>
                     <p class="my-0">
@@ -93,6 +93,11 @@
           </div>
         </div>
       </nav>
+      <div class="row text-center" id="delivery-banner">
+        <div class="col bg-black text-white">
+           <h4 class="logo-font my-1">Free delivery on orders over £{{ free_delivery_threshold }}</h4>
+        </div>
+      </div>
     </header>
 
     {% if messages %}
