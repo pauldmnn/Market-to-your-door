@@ -5,6 +5,7 @@ html {
 body {
     color: #000000;
     font-family: 'Lato';
+    margin-top: 70px;
 }
 
 header {
@@ -21,7 +22,7 @@ header {
 
 .market-banner {
     position: relative;
-    margin-top: var(--navbar-height); 
+    margin-top: 75px;
     width: 100%;
     height: calc(100vh - var(--navbar-height)); 
     overflow: hidden;
@@ -71,7 +72,7 @@ header {
 }
 
 .product-container {
-    margin-top: 80px;
+    margin-top: 70px;
 }
 
 .name-container {

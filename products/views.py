@@ -72,4 +72,5 @@ def category_products(request, category_slug):
     return render(request, 'products/category_products.html', {
         'category': category,
         'products': products
-    } )
+    })
+    

@@ -14,31 +14,49 @@
 
 {% block content %}
     <div class="overlay"></div>
-    <div class="container mb-2">
-        <div class="row">
-            <div class="col">
-                <hr>
-                <h2 class="logo-font mb-4">Your Cart</h2>
-                <hr>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                {% if cart_items %}
-                    <div class="table-responsive rounded"></div>
-                {% else %}
-                    <p class="lead mb-5">Your cart is empty.</p>
-                    <a href="{% url 'product_list' %}" class="btn btn-outline-black rounded-0 btn-lg">
-                        <span class="icon">
-                            <i class="fa-solid fa-circle-chevron-left"></i>
-                        </span>
-                        <span class="text-uppercase">Continue Shopping</span>
-                    </a>
-
-                {% endif %}
-            </div>
-        </div>
+    <div class="container my-5">
+        <h2>Your Cart</h2>
+        {% if cart_items %}
+            <form method="post" action="{% url 'update_cart' %}">
+                {% csrf_token %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Image</th>
+                            <th>Unit Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                            <tr>
+                                <td>{{ item.product.name }}</td>
+                                <td>
+                                    {% if item.product.image %}
+                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width:100px;">
+                                    {% endif %}
+                                </td>
+                                <td>${{ item.product.price|floatformat:2 }}</td>
+                                <td>
+                                    <input type="number" name="quantity_{{ item.product.slug }}" value="{{ item.quantity }}" min="0" class="form-control" style="width:80px;">
+                                </td>
+                                <td>${{ item.grand_total|floatformat:2 }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" class="text-end"><strong>Grand Total:</strong></td>
+                            <td><strong>${{ overall_total|floatformat:2 }}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <button type="submit" class="btn btn-primary">Update Cart</button>
+            </form>
+        {% else %}
+            <p>Your cart is empty.</p>
+        {% endif %}
     </div>
-
 {% endblock %}
-
