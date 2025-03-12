@@ -44,7 +44,7 @@
                                     <div class="mt-2">
                                         <button type="submit" name="update" value="{{ item.product.slug }}" class="btn btn-primary btn-sm">Update</button>
                                         <button type="submit" name="remove" value="{{ item.product.slug }}" class="btn btn-danger btn-sm">Remove</button>
-                                    </div>
+                                      </div>
                                 </td>
                                 <td class="grand-price" id="total-{{ item.product.slug }}">£{{ item.grand_total|floatformat:2 }}</td>
                             </tr>
@@ -63,5 +63,11 @@
             <p>Your cart is empty.</p>
         {% endif %}
     </div>
+    <script>
+        function updateCart(slug) {
+            let quantity = document.getElementById("quantity_" + slug).value;
+            window.location.href = `/cart/update/${slug}/update/?quantity=${quantity}`;
+        }
+    </script>
 
 {% endblock %}

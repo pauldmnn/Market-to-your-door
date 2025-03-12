@@ -71,8 +71,9 @@ def cart_detail(request):
 
 def update_cart(request):
     """
-    A view to update the cart and to remove items from the cart
+    A view to update and remove products from the cart
     """
+
     if request.method == 'POST':
         cart = request.session.get('cart', {})
 
@@ -83,10 +84,10 @@ def update_cart(request):
                 try:
                     new_qty = Decimal(new_qty)
                     if new_qty > 0:
-                        cart[slug]['quantity'] = float(new_qty)  # Store as float for JSON compatibility
+                        cart[slug]['quantity'] = float(new_qty)
                         messages.success(request, "Cart updated successfully.")
                     else:
-                        del cart[slug] 
+                        del cart[slug]  
                         messages.success(request, "Product removed from cart.")
                 except ValueError:
                     messages.error(request, "Invalid quantity entered.")
@@ -97,7 +98,7 @@ def update_cart(request):
                 del cart[slug]
                 messages.success(request, "Product removed from cart.")
 
-        request.session['cart'] = cart  
+        request.session['cart'] = cart 
 
     return redirect('cart_detail')
 
