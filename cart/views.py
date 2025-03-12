@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from products.models import Product
 from django.contrib import messages
+from django.http import JsonResponse
+from decimal import Decimal
 
 
 def view_cart(request):
@@ -18,15 +20,17 @@ def add_to_cart(request, slug):
     cart = request.session.get('cart', {})
 
     try:
-        quantity = int(request.POST.get('quantity', 1))
+        quantity = Decimal(request.POST.get('quantity', 1))
+        if quantity <= 0:
+            quantity = Decimal('0.1')
     except ValueError:
-        quantity = 1
+        quantity = Decimal('1')
 
     if slug in cart:
-        cart[slug]['quantity'] += quantity
+        cart[slug]['quantity'] =float(Decimal(cart[slug]['quantity']) + quantity) 
     else:
         cart[slug] = {
-            'quantity': quantity,
+            'quantity': float(quantity),
             'price': str(product.price)  
         }
 
@@ -45,16 +49,18 @@ def cart_detail(request):
     cart_items = []
     products = Product.objects.filter(slug__in=cart.keys())
 
+    overall_total = Decimal('0.00')
+
     for product in products:
-        quantity = cart[product.slug]['quantity']
-        grand_total = product.price * quantity
+        quantity = Decimal(cart[product.slug]['quantity'])
+        grand_total = Decimal(product.price)* quantity
         cart_items.append({
             'product': product,
-            'quantity': quantity,
-            'grand_total': grand_total
+            'quantity': quantity.quantize(Decimal('0.1')),
+            'grand_total': grand_total.quantize(Decimal('0.01'))
         })
-
-    overall_total = sum(item['grand_total'] for item in cart_items)
+    
+        overall_total += grand_total
 
     context = {
         'cart_items': cart_items,
@@ -74,9 +80,9 @@ def update_cart(request):
             new_qty = request.POST.get(f'quantity_{slug}')
             if new_qty is not None:
                 try:
-                    new_qty = int(new_qty)
+                    new_qty = Decimal(new_qty)
                     if new_qty > 0:
-                        cart[slug]['quantity'] = new_qty
+                        cart[slug]['quantity'] = float(new_qty)
                     else:
                         del cart[slug]
                 except ValueError:
@@ -85,28 +91,6 @@ def update_cart(request):
         request.session['cart'] = cart
         messages.success(request, "Cart updated successfully.")
 
-    return redirect('cart_detail')
-
-
-def update_cart_item(request, slug, action):
-    """
-    A view to update the item quantity by incrementing or decrementing amount
-    """
-    cart = request.session.get('cart', {})
-
-    if slug in cart:
-        if action == 'increment':
-            cart[slug]['quantity'] += 1
-        elif action == 'decrement':
-            cart[slug]['quantity'] -= 1
-            if cart[slug]['quantity'] < 1:
-                del cart[slug]
-        else:
-            messages.error(request, "Invalid action.")
-    else:
-        messages.error(request, "Product not in cart.")
-
-    request.session['cart'] = cart
     return redirect('cart_detail')
 
 

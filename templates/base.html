@@ -73,19 +73,14 @@
                   <a class="nav-link" href="">Register</a>
                 </li>
               {% endif %}
-              <li class="list-inline-item">
-                <a class="{% if grand_total %} text-info font-weight-bold {% else %} text-black {% endif %} nav-link" href="{% url 'cart_detail' %}">
-                  <div class="text-center">
-                    <div><i class="fa-solid fa-cart-shopping"></i></div>
-                    <p class="my-0">
-                      {% if grand_total %}
-                        £{{ grand_total|floatformat:2 }}
-                      {% else %}
-                        £0.00
-                      {% endif %}
-                    </p>
-                  </div>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="{% url 'cart_detail' %}" id="cartDropdown" role="button">
+                    <i class="fas fa-shopping-cart"></i> Cart
                 </a>
+                <div class="dropdown-menu">
+                    <p class="dropdown-item"><strong>Grand Total:</strong> $<span id="nav-grand-total">{{ overall_total|floatformat:2 }}</span></p>
+                    <a class="dropdown-item" href="{% url 'cart_detail' %}">View Cart</a>
+                </div>
               </li>
             </ul>
           </div>
@@ -110,6 +105,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
-            crossorigin="anonymous"></script>
+            crossorigin="anonymous">
+    </script>
+  
   </body>
 </html>

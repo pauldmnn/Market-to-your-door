@@ -40,14 +40,9 @@
                                 </td>
                                 <td>£{{ item.product.price|floatformat:2 }}</td>
                                 <td>
-                                    <input type="number" name="quantity_{{ item.product.slug }}" value="{{ item.quantity }}" min="0" class="form-control" style="width:80px;">
+                                    <input type="number" name="quantity_{{ item.product.slug }}" value="{{ item.quantity }}" min="0.1" step="0.1" class="form-control" style="width:80px;" required>
                                 </td>
-                                <td>
-                                    <a href="{% url 'update_cart_item' item.product.slug 'decrement' %}" class="btn btn-sm btn-danger">-</a>
-                                    <span class="mx-2">{{ item.quantity }}</span>
-                                    <a href="{% url 'update_cart_item' item.product.slug 'increment' %}" class="btn btn-sm btn-success">+</a>
-                                  </td>
-                                <td>£{{ item.grand_total|floatformat:2 }}</td>
+                                <td class="grand-price" id="total-{{ item.product.slug }}">£{{ item.grand_total|floatformat:2 }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -64,4 +59,5 @@
             <p>Your cart is empty.</p>
         {% endif %}
     </div>
+
 {% endblock %}
