@@ -73,15 +73,21 @@
                   <a class="nav-link" href="">Register</a>
                 </li>
               {% endif %}
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="{% url 'cart_detail' %}" id="cartDropdown" role="button">
-                    <i class="fas fa-shopping-cart"></i> Cart
+              <li class="list-inline-item">
+                <a class="{% if overall_total %} text-info font-weight-bold {% else %} text-black {% endif %} nav-link" href="{% url 'cart_detail' %}">
+                    <div class="text-center">
+                        <div><i class="fa-duotone fa-solid fa-cart-shopping fa-lg"></i></div>
+                        <p class="my-0">
+                            {% if overall_total %}
+                                £{{ overall_total|floatformat:2 }}
+                            {% else %}
+                                £0.00
+                            {% endif %}
+                        </p>
+                    </div>
                 </a>
-                <div class="dropdown-menu">
-                    <p class="dropdown-item"><strong>Grand Total:</strong> $<span id="nav-grand-total">{{ overall_total|floatformat:2 }}</span></p>
-                    <a class="dropdown-item" href="{% url 'cart_detail' %}">View Cart</a>
-                </div>
               </li>
+              
             </ul>
           </div>
         </div>
