@@ -27,7 +27,7 @@ def add_to_cart(request, slug):
         quantity = Decimal('1')
 
     if slug in cart:
-        cart[slug]['quantity'] =float(Decimal(cart[slug]['quantity']) + quantity) 
+        cart[slug]['quantity'] = float(Decimal(cart[slug]['quantity']) + quantity) 
     else:
         cart[slug] = {
             'quantity': float(quantity),
@@ -71,25 +71,33 @@ def cart_detail(request):
 
 def update_cart(request):
     """
-    Updates the cart quantities based on the submitted form.
+    A view to update the cart and to remove items from the cart
     """
     if request.method == 'POST':
         cart = request.session.get('cart', {})
 
-        for slug in list(cart.keys()):
+        if 'update' in request.POST:  
+            slug = request.POST.get('update')
             new_qty = request.POST.get(f'quantity_{slug}')
             if new_qty is not None:
                 try:
                     new_qty = Decimal(new_qty)
                     if new_qty > 0:
-                        cart[slug]['quantity'] = float(new_qty)
+                        cart[slug]['quantity'] = float(new_qty)  # Store as float for JSON compatibility
+                        messages.success(request, "Cart updated successfully.")
                     else:
-                        del cart[slug]
+                        del cart[slug] 
+                        messages.success(request, "Product removed from cart.")
                 except ValueError:
-                    pass
+                    messages.error(request, "Invalid quantity entered.")
 
-        request.session['cart'] = cart
-        messages.success(request, "Cart updated successfully.")
+        elif 'remove' in request.POST:
+            slug = request.POST.get('remove')
+            if slug in cart:
+                del cart[slug]
+                messages.success(request, "Product removed from cart.")
+
+        request.session['cart'] = cart  
 
     return redirect('cart_detail')
 
