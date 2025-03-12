@@ -86,3 +86,27 @@ def update_cart(request):
         messages.success(request, "Cart updated successfully.")
 
     return redirect('cart_detail')
+
+
+def update_cart_item(request, slug, action):
+    """
+    A view to update the item quantity by incrementing or decrementing amount
+    """
+    cart = request.session.get('cart', {})
+
+    if slug in cart:
+        if action == 'increment':
+            cart[slug]['quantity'] += 1
+        elif action == 'decrement':
+            cart[slug]['quantity'] -= 1
+            if cart[slug]['quantity'] < 1:
+                del cart[slug]
+        else:
+            messages.error(request, "Invalid action.")
+    else:
+        messages.error(request, "Product not in cart.")
+
+    request.session['cart'] = cart
+    return redirect('cart_detail')
+
+
