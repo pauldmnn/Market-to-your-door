@@ -49,9 +49,22 @@ def add_to_cart(request, slug):
 
     request.session['cart'] = cart
     messages.success(request, f"{product.name} (x{quantity}) has been added to your cart.")
+    total_price = Decimal(cart[slug]['quantity']) * Decimal(product.price)
 
-    next_url = request.POST.get('next', request.META.get('HTTP_REFERER', '/'))
-    return redirect(next_url)
+    grand_total = sum(Decimal(Product.objects.get(slug=item).price) * Decimal(cart[item]['quantity']) for item in cart)
+
+    messages.success(request, f"{product.name} (x{quantity}) has been added to your cart.")
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'new_quantity': cart[slug]['quantity'],
+            'total_price': round(float(total_price), 2),
+            'grand_total': round(float(grand_total), 2),
+        })
+
+    return redirect(request.META.get('HTTP_REFERER', 'cart_detail'))
+
 
 
 def cart_detail(request):
@@ -93,54 +106,45 @@ def update_cart(request):
         try:
             data = json.loads(request.body)
             slug = data.get('slug')
-            action = data.get('action')
+            new_quantity = Decimal(data.get('quantity', 0))  
 
-            if not slug or not action:
+            if not slug:
                 return JsonResponse({'success': False, 'error': "Invalid request data."})
 
             product = get_object_or_404(Product, slug=slug)
-            current_qty = Decimal(cart[slug]['quantity']) if slug in cart else Decimal('0')
 
-            if action == "increase":
-                new_qty = current_qty + Decimal('1') if product.price_unit == 'piece' else current_qty + Decimal('0.1')
-            elif action == "decrease":
-                new_qty = current_qty - Decimal('1') if product.price_unit == 'piece' else current_qty - Decimal('0.1')
-                if new_qty < 0:
-                    new_qty = Decimal('0')
-            elif action == "remove":
-                if slug in cart:
-                    del cart[slug]
-                    request.session['cart'] = cart
-                grand_total = sum(Decimal(Product.objects.get(slug=item).price) * Decimal(cart[item]['quantity']) for item in cart) if cart else Decimal('0')
-                return JsonResponse({
-                    'success': True,
-                    'new_quantity': 0,
-                    'grand_total': float(grand_total),  
-                    'total_price': 0
-                })
+            # Ensure correct decimal or integer quantity input
+            if product.price_unit == 'piece':
+                new_quantity = int(new_quantity)
+            else:
+                new_quantity = Decimal(new_quantity)
+
+            if new_quantity < 0:
+                new_quantity = 0
 
             # Prevent exceeding inventory
-            if new_qty > product.inventory:
+            if new_quantity > product.inventory:
                 return JsonResponse({'success': False, 'error': f"Only {product.inventory} available."})
 
-            if new_qty == 0:
+            if new_quantity == 0:
                 del cart[slug]
             else:
-                cart[slug] = {'quantity': float(new_qty), 'price': str(product.price)}
+                cart[slug] = {'quantity': float(new_quantity), 'price': str(product.price)}
 
             request.session['cart'] = cart
 
+            cart_empty = len(cart) == 0
+
             grand_total = sum(Decimal(Product.objects.get(slug=item).price) * Decimal(cart[item]['quantity']) for item in cart) if cart else Decimal('0')
-            total_price = Decimal(new_qty) * Decimal(product.price)
+            total_price = Decimal(new_quantity) * Decimal(product.price)
 
             return JsonResponse({
                 'success': True,
-                'new_quantity': float(new_qty),
-                'total_price': round(float(total_price), 2), 
-                'grand_total': round(float(grand_total), 2)  
+                'new_quantity': float(new_quantity),
+                'total_price': round(float(total_price), 2),
+                'grand_total': round(float(grand_total), 2),
+                'cart_empty': cart_empty
             })
 
         except (json.JSONDecodeError, ValueError):
             return JsonResponse({'success': False, 'error': "Invalid JSON data."})
-
-    return JsonResponse({'success': False, 'error': "Invalid request method."})
