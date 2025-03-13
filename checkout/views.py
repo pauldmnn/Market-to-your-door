@@ -20,6 +20,7 @@ def checkout(request):
             shipping_address.user = request.user
             shipping_address.save()
 
+            # Create an order
             order = Order.objects.create(user=request.user, total_price=0)
             order.shipping_address = shipping_address
             order.save()
@@ -43,5 +44,8 @@ def checkout(request):
 
 
 def order_summary(request, order_id):
-    order = Order.objects.get(id=order_id, user=request.user)
+    """
+    Displays the order summary after checkout.
+    """
+    order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, "checkout/order_summary.html", {"order": order})

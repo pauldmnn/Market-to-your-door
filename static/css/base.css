@@ -41,6 +41,9 @@ header {
     text-align: left;
     color: aqua;
 }
+.checkout-container {
+    margin-top: 150px;
+}
 
 .product-detail-img {
     width: 380px; 

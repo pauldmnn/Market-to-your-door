@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Order Summary</h2>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Order ID: {{ order.id }}</h5>
+            <p><strong>Date:</strong> {{ order.created_at }}</p>
+            <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+            <p><strong>Total Price:</strong> £{{ order.total_price|floatformat:2 }}</p>
+        </div>
+    </div>
+
+    <!-- Order Items -->
+    <h4>Ordered Items</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>£{{ item.product.price|floatformat:2 }}</td>
+                    <td>£{{ item.get_total_price|floatformat:2 }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Shipping Information -->
+    {% if order.shipping_address %}
+    <h4>Shipping Address</h4>
+    <p><strong>Name:</strong> {{ order.shipping_address.full_name }}</p>
+    <p><strong>Address:</strong> {{ order.shipping_address.address }}, {{ order.shipping_address.city }}</p>
+    <p><strong>Postal Code:</strong> {{ order.shipping_address.postal_code }}</p>
+    <p><strong>Country:</strong> {{ order.shipping_address.country }}</p>
+    <p><strong>Phone:</strong> {{ order.shipping_address.phone }}</p>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{% url 'product_list' %}" class="btn btn-primary">Continue Shopping</a>
+    </div>
+</div>
+{% endblock %}

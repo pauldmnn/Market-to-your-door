@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="overlay"></div>
+<div class="container mt-5">
+    <h2 class="checkout-container">Checkout</h2>
+
+    <!-- Order Summary -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Order Summary</h5>
+            {% for item in cart_items %}
+                <div class="d-flex justify-content-between">
+                    <p>{{ item.product.name }} (x{{ item.quantity }})</p>
+                    <p>£{{ item.get_total_price|floatformat:2 }}</p>
+                </div>
+            {% endfor %}
+            <hr>
+            <h5 class="text-end">Total: <strong>£{{ overall_total|floatformat:2 }}</strong></h5>
+        </div>
+    </div>
+
+    <!-- Shipping Address Form -->
+    <form method="POST">
+        {% csrf_token %}
+        <h5>Shipping Address</h5>
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary btn-lg">Place Order</button>
+    </form>
+</div>
+{% endblock %}
