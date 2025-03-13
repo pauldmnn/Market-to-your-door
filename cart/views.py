@@ -17,6 +17,11 @@ def add_to_cart(request, slug):
     Adds the product to the cart with the user-specified quantity.
     """
     product = get_object_or_404(Product, slug=slug)
+
+    if product.inventory == 0:
+        messages.error(request, f"{product.name} is out of stock.")
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+    
     cart = request.session.get('cart', {})
 
     try:
@@ -25,6 +30,13 @@ def add_to_cart(request, slug):
             quantity = Decimal('0.1')
     except ValueError:
         quantity = Decimal('1')
+    
+    current_quantity_in_cart = Decimal(cart[slug]['quantity']) if slug in cart else Decimal('0')
+    new_total_quantity = current_quantity_in_cart + quantity
+
+    if new_total_quantity > product.inventory:
+        messages.error(request, f"Only {product.inventory} {product.name}(s) are available in stock. You cannot add more.")
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
     if slug in cart:
         cart[slug]['quantity'] = float(Decimal(cart[slug]['quantity']) + quantity) 
@@ -101,5 +113,3 @@ def update_cart(request):
         request.session['cart'] = cart 
 
     return redirect('cart_detail')
-
-

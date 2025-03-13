@@ -9,6 +9,11 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category', 'price', 'created', 'updated']
+    list_display = ['name', 'category', 'price', 'inventory', 'is_in_stock', 'created', 'updated']
     list_filter = ['category', 'created', 'updated']
     prepopulated_fields = {'slug': ('name',)}
+    search_fields = ('name',)
+
+    def is_in_stock(self, obj):
+        return obj.inventory > 0
+    is_in_stock.boolean = True
