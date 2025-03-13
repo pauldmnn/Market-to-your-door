@@ -5,58 +5,62 @@
     <h2>Your Cart</h2>
     {% if cart_items %}
         <table class="table table-striped">
-        <thead>
-            <tr>
-            <th>Product</th>
-            <th>Image</th>
-            <th>Unit Price</th>
-            <th>Quantity</th>
-            <th>Total</th>
-            <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in cart_items %}
-            <tr id="cart-item-{{ item.product.slug }}">
-                <td>{{ item.product.name }}</td>
-                <td>
-                {% if item.product.image %}
-                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width:80px;">
-                {% endif %}
-                </td>
-                <td>£{{ item.product.price|floatformat:2 }} / {{ item.product.get_price_unit_display }}</td>
-                <td>
-                <div class="d-flex align-items-center">
-                    <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn" data-slug="{{ item.product.slug }}" data-action="decrease">-</button>
-                    <input type="number" class="form-control text-center quantity-input mx-2" 
-                        id="quantity-{{ item.product.slug }}" 
-                        data-slug="{{ item.product.slug }}"
-                        value="{{ item.quantity }}" 
-                        {% if item.product.price_unit == 'piece' %} min="1" step="1"
-                        {% else %} min="0.1" step="0.1" {% endif %}
-                        style="width: 80px;">
-                    <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn" data-slug="{{ item.product.slug }}" data-action="increase">+</button>
-                    <span class="ms-2">{{ item.product.get_price_unit_display }}</span>
-                </div>
-                </td>
-                <td id="total-{{ item.product.slug }}">£{{ item.total_price|floatformat:2 }}</td>
-                <td>
-                <button type="button" class="btn btn-danger btn-sm remove-item" data-slug="{{ item.product.slug }}">Remove</button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-            <td colspan="4" class="text-end"><strong>Grand Total:</strong></td>
-            <td><strong id="grand-total">£{{ overall_total|floatformat:2 }}</strong></td>
-            </tr>
-        </tfoot>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Image</th>
+                    <th>Unit Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr id="cart-item-{{ item.product.slug }}">
+                    <td>{{ item.product.name }}</td>
+                    <td>
+                    {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width:80px;">
+                    {% endif %}
+                    </td>
+                    <td>£{{ item.product.price|floatformat:2 }} / {{ item.product.get_price_unit_display }}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn" data-slug="{{ item.product.slug }}" data-action="decrease">-</button>
+                            <input type="number" class="form-control text-center quantity-input mx-2" 
+                                id="quantity-{{ item.product.slug }}" 
+                                data-slug="{{ item.product.slug }}"
+                                value="{{ item.quantity }}" 
+                                {% if item.product.price_unit == 'piece' %} min="1" step="1"
+                                {% else %} min="0.1" step="0.1" {% endif %}
+                                style="width: 80px;">
+                            <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn" data-slug="{{ item.product.slug }}" data-action="increase">+</button>
+                            <span class="ms-2">{{ item.product.get_price_unit_display }}</span>
+                        </div>
+                    </td>
+                    <td id="total-{{ item.product.slug }}">£{{ item.total_price|floatformat:2 }}</td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm remove-item" data-slug="{{ item.product.slug }}">Remove</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="text-end"><strong>Grand Total:</strong></td>
+                    <td><strong id="grand-total">£{{ overall_total|floatformat:2 }}</strong></td>
+                </tr>
+            </tfoot>
         </table>
-
-
+        <div class="text-center mt-4">
+            <a href="{% url 'checkout' %}" class="btn btn-success btn-lg">Proceed to Checkout</a>
+        </div>
     {% else %}
-        <p>Your cart is empty.</p>
+    <div class="text-center mt-5">
+        <h4>Your cart is empty</h4>
+        <a href="{% url 'product_list' %}" class="btn btn-primary mt-3">Shop Now</a>
+    </div>
     {% endif %}
     </div>
 
