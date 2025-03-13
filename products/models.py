@@ -14,6 +14,12 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    UNIT_CHOICES = [
+        ('piece', 'Per Piece'),
+        ('gram', 'Per Gram'),
+        ('kilogram', 'Per Kilogram'),
+    ]
+
     category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
@@ -23,9 +29,10 @@ class Product(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     inventory = models.PositiveIntegerField(default=0)
+    price_unit = models.CharField(max_length=10, choices=UNIT_CHOICES, default='piece')
 
     def is_in_stock(self):
         return self.inventory > 0
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.get_price_unit_display()}"

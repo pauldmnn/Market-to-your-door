@@ -1,104 +1,106 @@
 {% extends "base.html" %}
 {% load static %}
-
-{% block page_header %}
-    <div class="container header-container">
-        <div class="row">
-            <div class="col">
-                
-            </div>
-        </div>
-    </div>
-
-{% endblock %}
-
 {% block content %}
-    <div class="overlay"></div>
     <div class="container my-5">
-        <h2>Your Cart</h2>
-        {% if messages %}
-            <div class="alert alert-warning">
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
-            </div>
-        {% endif %}
-        {% if cart_items %}
-            <form method="post" action="{% url 'update_cart' %}">
-                {% csrf_token %}
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Image</th>
-                            <th>Unit Price</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in cart_items %}
-                            <tr>
-                                <td>{{ item.product.name }}</td>
-                                <td>
-                                    {% if item.product.image %}
-                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width:100px;">
-                                    {% endif %}
-                                </td>
-                                <td>£{{ item.product.price|floatformat:2 }}</td>
-                                <td>
-                                    <input type="number" name="quantity_{{ item.product.slug }}" value="{{ item.quantity }}" min="0.1" step="0.1" class="form-control" style="width:80px;" required>
-                                    <div class="mt-2">
-                                        <button type="submit" name="update" value="{{ item.product.slug }}" class="btn btn-primary btn-sm">Update</button>
-                                        <button type="submit" name="remove" value="{{ item.product.slug }}" class="btn btn-danger btn-sm">Remove</button>
-                                      </div>
-                                </td>
-                                <td class="grand-price" id="total-{{ item.product.slug }}">£{{ item.grand_total|floatformat:2 }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="4" class="text-end"><strong>Grand Total:</strong></td>
-                            <td><strong>£{{ overall_total|floatformat:2 }}</strong></td>
-                        </tr>
-                    </tfoot>
-                </table>
-                <button type="submit" class="btn btn-primary">Update Cart</button>
-            </form>
-        {% else %}
-            <p>Your cart is empty.</p>
-        {% endif %}
-    </div>
-    <div aria-live="polite" aria-atomic="true" class="position-relative">
-        <div class="toast-container position-fixed top-0 end-0 p-3">
-            {% for message in messages %}
-            <div class="toast align-items-center text-white {% if message.tags == 'error' %}bg-danger{% else %}bg-success{% endif %} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        {{ message }}
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    <h2>Your Cart</h2>
+    {% if cart_items %}
+        <table class="table table-striped">
+        <thead>
+            <tr>
+            <th>Product</th>
+            <th>Image</th>
+            <th>Unit Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr id="cart-item-{{ item.product.slug }}">
+                <td>{{ item.product.name }}</td>
+                <td>
+                {% if item.product.image %}
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width:80px;">
+                {% endif %}
+                </td>
+                <td>£{{ item.product.price|floatformat:2 }} / {{ item.product.get_price_unit_display }}</td>
+                <td>
+                <div class="d-flex align-items-center">
+                    <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn" data-slug="{{ item.product.slug }}" data-action="decrease">-</button>
+                    <span class="mx-2" id="quantity-{{ item.product.slug }}">{{ item.quantity }}</span>
+                    <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn" data-slug="{{ item.product.slug }}" data-action="increase">+</button>
+                    <span class="ms-2">{{ item.product.get_price_unit_display }}</span>
                 </div>
-            </div>
+                </td>
+                <td id="total-{{ item.product.slug }}">£{{ item.total_price|floatformat:2 }}</td>
+                <td>
+                <button type="button" class="btn btn-danger btn-sm remove-item" data-slug="{{ item.product.slug }}">Remove</button>
+                </td>
+            </tr>
             {% endfor %}
-        </div>
+        </tbody>
+        <tfoot>
+            <tr>
+            <td colspan="4" class="text-end"><strong>Grand Total:</strong></td>
+            <td><strong id="grand-total">£{{ overall_total|floatformat:2 }}</strong></td>
+            </tr>
+        </tfoot>
+        </table>
+
+
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
     </div>
+
+    <!-- JavaScript for Quantity Updates -->
     <script>
-        function updateCart(slug) {
-            let quantity = document.getElementById("quantity_" + slug).value;
-            window.location.href = `/cart/update/${slug}/update/?quantity=${quantity}`;
-        }
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
-            var toastList = toastElList.map(function(toastEl) {
-                return new bootstrap.Toast(toastEl);
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".quantity-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    const slug = this.dataset.slug;
+                    const action = this.dataset.action;
+                    updateCartQuantity(slug, action);
+                });
             });
-            toastList.forEach(toast => toast.show());
+      
+            document.querySelectorAll(".remove-item").forEach(button => {
+                button.addEventListener("click", function () {
+                    const slug = this.dataset.slug;
+                    updateCartQuantity(slug, "remove");
+                });
+            });
+      
+            function updateCartQuantity(slug, action) {
+                fetch("{% url 'update_cart' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ slug: slug, action: action }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById(`quantity-${slug}`).innerText = data.new_quantity;
+                        document.getElementById(`total-${slug}`).innerText = `£${data.total_price.toFixed(2)}`;
+                        
+                        if (!isNaN(data.grand_total)) {
+                            document.getElementById("grand-total").innerText = `£${data.grand_total.toFixed(2)}`;
+                        }
+      
+                        if (data.new_quantity <= 0) {
+                            document.getElementById(`cart-item-${slug}`).remove();
+                        }
+                    } else {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => console.error("Error updating cart:", error));
+            }
         });
     </script>
       
-
 {% endblock %}

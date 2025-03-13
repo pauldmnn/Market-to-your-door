@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from products.models import Product
 from django.contrib import messages
 from django.http import JsonResponse
+import json
 from decimal import Decimal
 
 
@@ -65,7 +66,7 @@ def cart_detail(request):
 
     for product in products:
         quantity = Decimal(cart[product.slug]['quantity'])
-        grand_total = Decimal(product.price)* quantity
+        grand_total = Decimal(product.price) * quantity
         cart_items.append({
             'product': product,
             'quantity': quantity.quantize(Decimal('0.1')),
@@ -89,27 +90,57 @@ def update_cart(request):
     if request.method == 'POST':
         cart = request.session.get('cart', {})
 
-        if 'update' in request.POST:  
-            slug = request.POST.get('update')
-            new_qty = request.POST.get(f'quantity_{slug}')
-            if new_qty is not None:
-                try:
-                    new_qty = Decimal(new_qty)
-                    if new_qty > 0:
-                        cart[slug]['quantity'] = float(new_qty)
-                        messages.success(request, "Cart updated successfully.")
-                    else:
-                        del cart[slug]  
-                        messages.success(request, "Product removed from cart.")
-                except ValueError:
-                    messages.error(request, "Invalid quantity entered.")
+        try:
+            data = json.loads(request.body)
+            slug = data.get('slug')
+            action = data.get('action')
 
-        elif 'remove' in request.POST:
-            slug = request.POST.get('remove')
-            if slug in cart:
+            if not slug or not action:
+                return JsonResponse({'success': False, 'error': "Invalid request data."})
+
+            product = get_object_or_404(Product, slug=slug)
+            current_qty = Decimal(cart[slug]['quantity']) if slug in cart else Decimal('0')
+
+            if action == "increase":
+                new_qty = current_qty + Decimal('1') if product.price_unit == 'piece' else current_qty + Decimal('0.1')
+            elif action == "decrease":
+                new_qty = current_qty - Decimal('1') if product.price_unit == 'piece' else current_qty - Decimal('0.1')
+                if new_qty < 0:
+                    new_qty = Decimal('0')
+            elif action == "remove":
+                if slug in cart:
+                    del cart[slug]
+                    request.session['cart'] = cart
+                grand_total = sum(Decimal(Product.objects.get(slug=item).price) * Decimal(cart[item]['quantity']) for item in cart) if cart else Decimal('0')
+                return JsonResponse({
+                    'success': True,
+                    'new_quantity': 0,
+                    'grand_total': float(grand_total),  
+                    'total_price': 0
+                })
+
+            # Prevent exceeding inventory
+            if new_qty > product.inventory:
+                return JsonResponse({'success': False, 'error': f"Only {product.inventory} available."})
+
+            if new_qty == 0:
                 del cart[slug]
-                messages.success(request, "Product removed from cart.")
+            else:
+                cart[slug] = {'quantity': float(new_qty), 'price': str(product.price)}
 
-        request.session['cart'] = cart 
+            request.session['cart'] = cart
 
-    return redirect('cart_detail')
+            grand_total = sum(Decimal(Product.objects.get(slug=item).price) * Decimal(cart[item]['quantity']) for item in cart) if cart else Decimal('0')
+            total_price = Decimal(new_qty) * Decimal(product.price)
+
+            return JsonResponse({
+                'success': True,
+                'new_quantity': float(new_qty),
+                'total_price': round(float(total_price), 2), 
+                'grand_total': round(float(grand_total), 2)  
+            })
+
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({'success': False, 'error': "Invalid JSON data."})
+
+    return JsonResponse({'success': False, 'error': "Invalid request method."})
