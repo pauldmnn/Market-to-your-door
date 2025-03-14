@@ -6,19 +6,30 @@
     <h2 class="text-center my-4">Checkout</h2>
 
     <div class="row">
+        <!-- Left Side: Shipping Form & Payment -->
         <div class="col-md-6">
-            <h4>Shipping Details</h4>
-            <form method="POST" action="{% url 'checkout' %}">
+            <h4>Shipping & Payment Details</h4>
+            <form id="payment-form" method="POST">
                 {% csrf_token %}
                 
-                <div class="card p-3 shadow-sm">
+                <!-- Shipping Details -->
+                <div class="card p-3 shadow-sm mb-3">
                     {{ form.as_p }}
                 </div>
 
-                <button type="submit" class="btn btn-primary mt-3 w-100">Go to Payment</button>
+                <!-- Stripe Card Details Form -->
+                <div class="card p-3 shadow-sm mb-3">
+                    <h5>Payment Details</h5>
+                    <div id="card-element" class="form-control">
+                    </div>
+                    <div id="error-message" class="text-danger mt-2"></div>
+                </div>
+
+                <button id="submit-button" class="btn btn-primary w-100">Pay Now</button>
             </form>
         </div>
 
+        <!-- Right Side: Order Summary -->
         <div class="col-md-6">
             <h4>Order Summary</h4>
             <div class="card p-3 shadow-sm">
@@ -47,12 +58,14 @@
         </div>
     </div>
 </div>
-{% endblock %}
 
 {% block postloadjs %}
     {{ block.super }}
     {{ stripe_public_key|json_script:"id_stripe_public_key" }}
     {{ client_secret|json_script:"id_client_secret" }}
+{% endblock %}
 
+<script src="https://js.stripe.com/v3/"></script>
+<script src="{% static 'js/stripe.js' %}"></script>
 
 {% endblock %}

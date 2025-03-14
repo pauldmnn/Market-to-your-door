@@ -14,6 +14,9 @@ from pathlib import Path
 
 import os
 
+if os.path.isfile('env.py'):
+    import env
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -168,11 +171,15 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Stripe API Keys
-STRIPE_PUBLIC_KEY = "pk_test_51R2ZOwJfNMvf6W7QtblVzGxzyPcL2fIh8tsfHO7QH3SGg6piOQwmQDfkMnixu7vCcFFDzf0NTH0zoNoGaBvNIUe00082x9bKxx"
-STRIPE_SECRET_KEY = "sk_test_51R2ZOwJfNMvf6W7Qq3ah3Kjth3qQF2cfpk66zecA1dZBuCOXIOsrgn9d5UViY34kpXDtuXR9XtlO6DyfAP36r72f00lhlRttmN"
+
+STRIPE_CURRENCY = 'gbp'
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', '')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
+STRIPE_WH_SECRET = os.getenv('STRIPE_WH_SECRET', '')
 STRIPE_SUCCESS_URL = "http://127.0.0.1:8000/checkout/success/"
 STRIPE_CANCEL_URL = "http://127.0.0.1:8000/checkout/cancel/"
-
+if not STRIPE_PUBLIC_KEY or not STRIPE_SECRET_KEY:
+    raise ValueError("⚠️ Stripe API keys are missing from the environment variables!")
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

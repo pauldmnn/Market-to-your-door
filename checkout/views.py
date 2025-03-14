@@ -8,55 +8,43 @@ from decimal import Decimal
 from django.conf import settings
 from django.http import JsonResponse
 
-
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 def checkout(request):
     """
-    Handles the checkout process.
+    Handles the checkout process and integrates Stripe for payment.
     """
     cart_items = Cart.objects.filter(user=request.user)
+
     if not cart_items.exists():
         messages.error(request, "Your cart is empty!")
         return redirect("cart_detail")
 
+    # Calculate totals
     subtotal = sum(item.product.price * Decimal(item.quantity) for item in cart_items)
-
-    if subtotal >= settings.FREE_DELIVERY_THRESHOLD:
-        delivery_cost = Decimal('0.00')  
-    else:
-        delivery_cost = (Decimal(settings.STANDARD_DELIVERY_PERCENTAGE) / 100) * subtotal
-
+    delivery_cost = Decimal('0.00') if subtotal >= settings.FREE_DELIVERY_THRESHOLD else (Decimal(settings.STANDARD_DELIVERY_PERCENTAGE) / 100) * subtotal
     grand_total = subtotal + delivery_cost
+
+    order = None
+    client_secret = None
 
     if request.method == "POST":
         form = ShippingAddressForm(request.POST)
         if form.is_valid():
-            order = Order.objects.create(
-                user=request.user, 
-                total_price=grand_total,
-            )
-
             shipping_address = form.save(commit=False)
             shipping_address.user = request.user
-            shipping_address.order = order
             shipping_address.save()
 
-            order.shipping_address = shipping_address
-            order.save()
+            #  Create an order before generating client_secret
+            order = Order.objects.create(user=request.user, total_price=grand_total, shipping_address=shipping_address)
 
-            # Create an order
+            # Create Stripe PaymentIntent
+            payment_intent = stripe.PaymentIntent.create(
+                amount=int(grand_total * 100), 
+                currency="gbp",
+            )
+            client_secret = payment_intent.client_secret
 
-            for item in cart_items:
-                OrderItem.objects.create(
-                    order=order,
-                    product=item.product,
-                    quantity=item.quantity
-                )
-
-            cart_items.delete()  
-
-            messages.success(request, "Order placed successfully!")
-            return redirect("order_summary", order_id=order.id)
     else:
         form = ShippingAddressForm()
 
@@ -66,6 +54,9 @@ def checkout(request):
         "subtotal": round(float(subtotal), 2),
         "delivery_cost": round(float(delivery_cost), 2),
         "grand_total": round(float(grand_total), 2),
+        "order": order,
+        "client_secret": client_secret,  
+        "stripe_public_key": settings.STRIPE_PUBLIC_KEY,
     })
 
 
@@ -81,7 +72,9 @@ def order_summary(request, order_id):
         "order_items": order_items
     })
 
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 def create_checkout_session(request):
     """
@@ -144,20 +137,25 @@ def create_checkout_session(request):
 
     return JsonResponse({"id": checkout_session.id})
 
-def payment(request):
-    """
-    Displays the Stripe payment page.
-    """
-    order = Order.objects.filter(user=request.user).last()
 
-    if not order:
-        messages.error(request, "No active order found.")
-        return redirect("checkout")
+def payment(request, order_id):
+    """
+    Displays the Stripe payment page with a valid client secret.
+    """
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    # Create a PaymentIntent for the order
+    payment_intent = stripe.PaymentIntent.create(
+        amount=int(order.total_price * 100),  
+        currency="gbp",
+    )
 
     return render(request, "checkout/payment.html", {
         "order": order,
+        "client_secret": payment_intent.client_secret, 
         "stripe_public_key": settings.STRIPE_PUBLIC_KEY
     })
+
 
 def payment_success(request):
     """
@@ -174,6 +172,7 @@ def payment_success(request):
 
     messages.success(request, "Payment successful! Your order has been placed.")
     return redirect("order_summary", order_id=order.id)
+
 
 def payment_cancel(request):
     """
