@@ -179,7 +179,7 @@ STRIPE_WH_SECRET = os.getenv('STRIPE_WH_SECRET', '')
 STRIPE_SUCCESS_URL = "http://127.0.0.1:8000/checkout/success/"
 STRIPE_CANCEL_URL = "http://127.0.0.1:8000/checkout/cancel/"
 if not STRIPE_PUBLIC_KEY or not STRIPE_SECRET_KEY:
-    raise ValueError("⚠️ Stripe API keys are missing from the environment variables!")
+    raise ValueError(" Stripe API keys are missing from the environment variables!")
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

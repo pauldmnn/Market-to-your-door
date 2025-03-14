@@ -44,6 +44,12 @@ def checkout(request):
                 currency="gbp",
             )
             client_secret = payment_intent.client_secret
+            
+            print("\n✅ Stripe PaymentIntent Created:")
+            print(f"   - ID: {payment_intent.id}")
+            print(f"   - Amount: {payment_intent.amount / 100} GBP")
+            print(f"   - Client Secret: {payment_intent.client_secret}")
+            print(f"   - Status: {payment_intent.status}\n")
 
     else:
         form = ShippingAddressForm()
@@ -132,7 +138,7 @@ def create_checkout_session(request):
         mode="payment",
         success_url=settings.STRIPE_SUCCESS_URL + "?session_id={CHECKOUT_SESSION_ID}",
         cancel_url=settings.STRIPE_CANCEL_URL,
-        metadata={"order_id": order.id},
+        metadata={"order_id": str(order.id)},
     )
 
     return JsonResponse({"id": checkout_session.id})
@@ -162,16 +168,29 @@ def payment_success(request):
     Marks the order as 'Paid' after successful payment.
     """
     session_id = request.GET.get("session_id")
-    session = stripe.checkout.Session.retrieve(session_id)
-    order_id = session.metadata["order_id"]
+    if not session_id:
+        messages.error(request, "No payment session found.")
+        return redirect("checkout")
 
-    order = get_object_or_404(Order, id=order_id)
-    order.status = "paid"
-    order.payment_id = session.payment_intent
-    order.save()
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+        if "order_id" not in session.metadata:
+            messages.error(request, "Order metadata missing from payment session.")
+            return redirect("checkout")
+        
+        order_id = session.metadata["order_id"]
 
-    messages.success(request, "Payment successful! Your order has been placed.")
-    return redirect("order_summary", order_id=order.id)
+        order = get_object_or_404(Order, id=order_id)
+        order.status = "paid"
+        order.payment_id = session.payment_intent
+        order.save()
+
+        messages.success(request, "Payment successful! Your order has been placed.")
+        return redirect("order_summary", order_id=order.id)
+
+    except stripe.error.StripeError:
+        messages.error(request, "Error retrieving payment session.")
+        return redirect("checkout")
 
 
 def payment_cancel(request):
