@@ -12,7 +12,7 @@
 
     {% block corejs %}
         <script src="https://kit.fontawesome.com/f31014cfb8.js" crossorigin="anonymous"></script>
-
+        <script src="{% static 'js/cart.js' %}"></script>
     {% endblock %}
     
     {% block corecss %}
@@ -74,16 +74,17 @@
                 </li>
               {% endif %}
               <li class="list-inline-item">
-                <a class="{% if overall_total %} text-info font-weight-bold {% else %} text-black {% endif %} nav-link" href="{% url 'cart_detail' %}">
+                <a class="{% if grand_total %} text-info font-weight-bold {% else %} text-black {% endif %} nav-link" href="{% url 'cart_detail' %}">
                     <div class="text-center">
                         <div><i class="fa-duotone fa-solid fa-cart-shopping fa-lg"></i></div>
-                        <p class="my-0">
-                            {% if overall_total %}
-                                £{{ overall_total|floatformat:2 }}
+                        <p class="my-0" id="nav-grand-total">
+                            {% if grand_total %}
+                                £{{ grand_total|floatformat:2 }}
                             {% else %}
                                 £0.00
                             {% endif %}
                         </p>
+                        <span id="cart-item-count" class="badge bg-primary">{{ cart_count }}</span>
                     </div>
                 </a>
               </li>

@@ -2,152 +2,69 @@
 {% load static %}
 {% block content %}
     <div class="container my-5">
-    <h2>Your Cart</h2>
-    {% if cart_items %}
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Image</th>
-                    <th>Unit Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in cart_items %}
-                <tr id="cart-item-{{ item.product.slug }}">
-                    <td>{{ item.product.name }}</td>
-                    <td>
-                    {% if item.product.image %}
-                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width:80px;">
-                    {% endif %}
-                    </td>
-                    <td>£{{ item.product.price|floatformat:2 }} / {{ item.product.get_price_unit_display }}</td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn" data-slug="{{ item.product.slug }}" data-action="decrease">-</button>
-                            <input type="number" class="form-control text-center quantity-input mx-2" 
-                                id="quantity-{{ item.product.slug }}" 
-                                data-slug="{{ item.product.slug }}"
-                                value="{{ item.quantity }}" 
-                                {% if item.product.price_unit == 'piece' %} min="1" step="1"
-                                {% else %} min="0.1" step="0.1" {% endif %}
-                                style="width: 80px;">
-                            <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn" data-slug="{{ item.product.slug }}" data-action="increase">+</button>
-                            <span class="ms-2">{{ item.product.get_price_unit_display }}</span>
-                        </div>
-                    </td>
-                    <td id="total-{{ item.product.slug }}">£{{ item.total_price|floatformat:2 }}</td>
-                    <td>
-                        <button type="button" class="btn btn-danger btn-sm remove-item" data-slug="{{ item.product.slug }}">Remove</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="4" class="text-end"><strong>Grand Total:</strong></td>
-                    <td><strong id="grand-total">£{{ overall_total|floatformat:2 }}</strong></td>
-                </tr>
-            </tfoot>
-        </table>
-        <div class="text-center mt-4">
-            <a href="{% url 'checkout' %}" class="btn btn-success btn-lg">Proceed to Checkout</a>
+        <h2>Your Cart</h2>
+        {% if cart_items %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Image</th>
+                        <th>Unit Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr id="cart-item-{{ item.product.slug }}">
+                        <td>{{ item.product.name }}</td>
+                        <td>
+                        {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width:80px;">
+                        {% endif %}
+                        </td>
+                        <td>£{{ item.product.price|floatformat:2 }} / {{ item.product.get_price_unit_display }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn" data-slug="{{ item.product.slug }}" data-action="decrease">-</button>
+                                
+                                <input type="number" class="form-control text-center quantity-input mx-2" 
+                                    id="quantity-{{ item.product.slug }}" 
+                                    data-slug="{{ item.product.slug }}"
+                                    value="{{ item.quantity }}" 
+                                    {% if item.product.price_unit == 'piece' %} min="1" step="1"
+                                    {% else %} min="0.1" step="0.1" {% endif %}
+                                    style="width: 80px;">
+                            
+                                <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn" data-slug="{{ item.product.slug }}" data-action="increase">+</button>
+                                
+                                <span class="ms-2">{{ item.product.get_price_unit_display }}</span>
+                            </div>
+                        </td>
+                        <td id="total-{{ item.product.slug }}">£{{ item.total_price|floatformat:2 }}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm remove-item" data-slug="{{ item.product.slug }}">Remove</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>Grand Total:</strong></td>
+                        <td><strong id="grand-total">£{{ grand_total|floatformat:2 }}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="text-center mt-4">
+                <a href="{% url 'checkout' %}" class="btn btn-success btn-lg">Proceed to Checkout</a>
+            </div>
+        {% else %}
+        <div class="text-center mt-5">
+            <h4>Your cart is empty</h4>
+            <a href="{% url 'product_list' %}" class="btn btn-primary mt-3">Shop Now</a>
         </div>
-    {% else %}
-    <div class="text-center mt-5">
-        <h4>Your cart is empty</h4>
-        <a href="{% url 'product_list' %}" class="btn btn-primary mt-3">Shop Now</a>
+        {% endif %}
     </div>
-    {% endif %}
-    </div>
-
-    <!-- JavaScript for Quantity Updates -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll(".quantity-btn").forEach(button => {
-                button.addEventListener("click", function () {
-                    const slug = this.dataset.slug;
-                    const action = this.dataset.action;
-                    let inputField = document.getElementById(`quantity-${slug}`);
-      
-                    let newQuantity = parseFloat(inputField.value);
-      
-                    if (action === "increase") {
-                        newQuantity += inputField.step ? parseFloat(inputField.step) : 1;
-                    } else if (action === "decrease") {
-                        newQuantity -= inputField.step ? parseFloat(inputField.step) : 1;
-                        if (newQuantity < parseFloat(inputField.min)) {
-                            newQuantity = parseFloat(inputField.min);
-                        }
-                    }
-      
-                    inputField.value = newQuantity; 
-                    updateCartQuantity(slug, newQuantity);
-                });
-            });
-      
-            document.querySelectorAll(".quantity-input").forEach(input => {
-                input.addEventListener("change", function () {
-                    const slug = this.dataset.slug;
-                    let newQuantity = parseFloat(this.value);
-      
-                    if (newQuantity < parseFloat(this.min)) {
-                        newQuantity = parseFloat(this.min);
-                        this.value = newQuantity;
-                    }
-      
-                    updateCartQuantity(slug, newQuantity);
-                });
-            });
-      
-            document.querySelectorAll(".remove-item").forEach(button => {
-                button.addEventListener("click", function () {
-                    const slug = this.dataset.slug;
-                    updateCartQuantity(slug, 0); 
-                });
-            });
-      
-            function updateCartQuantity(slug, newQuantity) {
-                fetch("{% url 'update_cart' %}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRFToken": "{{ csrf_token }}",
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ slug: slug, quantity: newQuantity }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById(`quantity-${slug}`).value = data.new_quantity;
-                        document.getElementById(`total-${slug}`).innerText = `£${data.total_price.toFixed(2)}`;
-      
-                        if (!isNaN(data.grand_total)) {
-                            document.getElementById("grand-total").innerText = `£${data.grand_total.toFixed(2)}`;
-                        }
-      
-                        if (data.new_quantity <= 0) {
-                            document.getElementById(`cart-item-${slug}`).remove();
-                        }
-      
-                        if (data.cart_empty) {
-                            document.getElementById("cart-container").innerHTML = `
-                                <div class="text-center mt-5">
-                                    <h4>Your cart is empty</h4>
-                                    <a href="{% url 'product_list' %}" class="btn btn-primary mt-3">Shop Now</a>
-                                </div>
-                            `;
-                        }
-                    } else {
-                        alert(data.error);
-                    }
-                })
-                .catch(error => console.error("Error updating cart:", error));
-            }
-        });
-      </script>
-      
+         
 {% endblock %}

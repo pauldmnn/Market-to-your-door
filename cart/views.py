@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from products.models import Product
 from .models import Cart
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 import json
@@ -79,7 +78,7 @@ def cart_detail(request):
 
     context = {
         'cart_items': cart_items,
-        'overall_total': round(float(overall_total), 2),
+        'grand_total': round(float(overall_total), 2),
     }
     return render(request, 'cart/cart.html', context)
 
@@ -89,48 +88,47 @@ def update_cart(request):
     A view to update and remove products from the cart
     """
 
-    if request.method == 'POST':
+    if request.method == "POST":
+
         try:
             data = json.loads(request.body)
-            slug = data.get('slug')
-            new_quantity = Decimal(data.get('quantity', 0))  
+            slug = data.get("slug")
+            new_quantity = Decimal(data.get("quantity", 0))
 
             if not slug:
-                return JsonResponse({'success': False, 'error': "Invalid request data."})
+                return JsonResponse({"success": False, "error": "Invalid product slug."})
 
             product = get_object_or_404(Product, slug=slug)
-            cart_item = get_object_or_404(Cart, user=request.user, product=product)
+            cart_item = Cart.objects.filter(user=request.user, product=product).first()
 
-            # Ensure correct quantity input
-            if product.price_unit == 'piece':
-                new_quantity = int(new_quantity)
-            else:
-                new_quantity = Decimal(new_quantity)
+            if not cart_item:
+                return JsonResponse({"success": False, "error": "Product not found in cart."})
 
             if new_quantity < 0:
                 new_quantity = 0
 
-            # Prevent exceeding inventory
             if new_quantity > product.inventory:
-                return JsonResponse({'success': False, 'error': f"Only {product.inventory} available."})
+                return JsonResponse({"success": False, "error": f"Only {product.inventory} available in stock."})
 
             if new_quantity == 0:
                 cart_item.delete()
             else:
-                cart_item.quantity = new_quantity
+                cart_item.quantity = float(new_quantity)
                 cart_item.save()
 
-            cart_empty = not Cart.objects.filter(user=request.user).exists()
-            grand_total = sum(item.product.price * Decimal(item.quantity) for item in Cart.objects.filter(user=request.user))
-            total_price = product.price * new_quantity
+            cart_items = Cart.objects.filter(user=request.user)
+            grand_total = sum(item.product.price * Decimal(item.quantity) for item in cart_items)
+            total_price = product.price * Decimal(new_quantity)
+            cart_count = sum(Decimal(item.quantity) for item in cart_items)
 
             return JsonResponse({
-                'success': True,
-                'new_quantity': float(new_quantity),
-                'total_price': round(float(total_price), 2),
-                'grand_total': round(float(grand_total), 2),
-                'cart_empty': cart_empty
+                "success": True,
+                "new_quantity": float(new_quantity),
+                "total_price": round(float(total_price), 2),
+                "grand_total": round(float(grand_total), 2),
+                "cart_count": int(cart_count),
+                "cart_empty": len(cart_items) == 0,
             })
 
         except (json.JSONDecodeError, ValueError):
-            return JsonResponse({'success': False, 'error': "Invalid JSON data."})
+            return JsonResponse({"success": False, "error": "Invalid JSON data."})

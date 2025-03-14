@@ -1,7 +1,11 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from products.models import Product
 from decimal import Decimal
+from django.conf import settings
+from django.db.models import Sum
+
 
 class Order(models.Model):
     STATUS_CHOICES = [
@@ -10,15 +14,34 @@ class Order(models.Model):
         ('shipped', 'Shipped'),
         ('delivered', 'Delivered'),
         ('cancelled', 'Cancelled'),
+        
     ]
 
+    order_number = models.CharField(max_length=12, unique=True, editable=False,)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    payment_id = models.CharField(max_length=255, blank=True, null=True)  # Store payment info
+    payment_id = models.CharField(max_length=255, blank=True, null=True)  
 
+    def save(self, *args, **kwargs):
+        """
+        Generate a unique order number before saving.
+        """
+        if self.order_number ==  self.order_number:
+            self.order_number = self.generate_order_number()
+        super().save(*args, **kwargs)
+
+    def _generate_order_number(self):
+        """
+        Generate a random, unique order number using UUID
+        """
+        return uuid.uuid4().hex.upper()
+    
+    def __str__(self):
+        return self.order_number
+    
     def calculate_total(self):
         """
         Calculate total price of all items in the order.

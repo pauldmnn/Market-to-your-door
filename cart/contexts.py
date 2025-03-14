@@ -2,49 +2,35 @@ from decimal import Decimal
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from products.models import Product
+from .models import Cart
 
 
 def cart_contents(request):
     """
-    Context processor to provide cart contents globally across the site.
+    Ensures the cart data is available in the navbar on all pages.
     """
-    cart_items = []
-    total = Decimal('0.00')
-    product_count = 0
-    cart = request.session.get('cart', {})
+    if request.user.is_authenticated:
+        cart_items = Cart.objects.filter(user=request.user)
+    else:
+        cart_items = []
 
-    for slug, item_data in cart.items():
-        product = get_object_or_404(Product, slug=slug)
+    total = Decimal("0.00")
+    cart_count = 0
+    cart_data = []
 
-        # Handle decimal quantities
-        quantity = Decimal(item_data['quantity'])
-        total += quantity * Decimal(product.price)
-        product_count += quantity
+    for item in cart_items:
+        total += item.product.price * Decimal(item.quantity)
+        cart_count += Decimal(item.quantity)
 
-        cart_items.append({
-            'product': product,
-            'quantity': quantity,
+        cart_data.append({
+            "product": item.product,
+            "quantity": item.quantity,
+            "total_price": item.product.price * Decimal(item.quantity)
         })
 
-    # Handle delivery charges if applicable
-    if total < Decimal(settings.FREE_DELIVERY_THRESHOLD):
-        delivery = total * Decimal(settings.STANDARD_DELIVERY_PERCENTAGE / 100)
-        free_delivery_delta = Decimal(settings.FREE_DELIVERY_THRESHOLD) - total
-    else:
-        delivery = Decimal('0.00')
-        free_delivery_delta = Decimal('0.00')
-
-    overall_total = total + delivery
-
-    context = {
-        'cart_items': cart_items,
-        'total': total.quantize(Decimal('0.01')),  # Ensure proper decimal formatting
-        'product_count': product_count,
-        'delivery': delivery.quantize(Decimal('0.01')),
-        'free_delivery_delta': free_delivery_delta.quantize(Decimal('0.01')),
-        'free_delivery_threshold': Decimal(settings.FREE_DELIVERY_THRESHOLD),
-        'overall_total': overall_total.quantize(Decimal('0.01')),
+    return {
+        "cart_items": cart_data,
+        "grand_total": round(float(total), 2),
+        "cart_count": int(cart_count)
     }
-
-    return context
 
