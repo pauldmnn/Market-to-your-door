@@ -13,6 +13,8 @@
     {% block corejs %}
         <script src="https://kit.fontawesome.com/f31014cfb8.js" crossorigin="anonymous"></script>
         <script src="{% static 'js/cart.js' %}"></script>
+        <!-- Stripe -->
+        <script src="https://js.stripe.com/v3/"></script>
     {% endblock %}
     
     {% block corecss %}
@@ -84,7 +86,7 @@
                                 £0.00
                             {% endif %}
                         </p>
-                        <span id="cart-item-count" class="badge bg-primary">{{ cart_count }}</span>
+                        <!-- <span id="cart-item-count" class="badge bg-primary">{{ cart_count }}</span> -->
                     </div>
                 </a>
               </li>
@@ -93,10 +95,8 @@
           </div>
         </div>
       </nav>
-      <div class="row text-center" id="delivery-banner">
-        <div class="col bg-black text-white">
-           <h4 class="logo-font my-1">Free delivery on orders over £{{ free_delivery_threshold }}</h4>
-        </div>
+      <div class="bg-dark text-light text-center py-2">
+        <p class="mb-0">{{ free_delivery_message }}</p>
       </div>
     </header>
 

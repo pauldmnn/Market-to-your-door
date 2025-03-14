@@ -81,6 +81,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'cart.contexts.cart_contents',
+                'cart.contexts.site_wide_messages',
             ],
         },
     },
@@ -165,6 +166,12 @@ STANDARD_DELIVERY_PERCENTAGE = 10
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# Stripe API Keys
+STRIPE_PUBLIC_KEY = "pk_test_51R2ZOwJfNMvf6W7QtblVzGxzyPcL2fIh8tsfHO7QH3SGg6piOQwmQDfkMnixu7vCcFFDzf0NTH0zoNoGaBvNIUe00082x9bKxx"
+STRIPE_SECRET_KEY = "sk_test_51R2ZOwJfNMvf6W7Qq3ah3Kjth3qQF2cfpk66zecA1dZBuCOXIOsrgn9d5UViY34kpXDtuXR9XtlO6DyfAP36r72f00lhlRttmN"
+STRIPE_SUCCESS_URL = "http://127.0.0.1:8000/checkout/success/"
+STRIPE_CANCEL_URL = "http://127.0.0.1:8000/checkout/cancel/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

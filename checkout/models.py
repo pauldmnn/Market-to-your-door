@@ -23,13 +23,29 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    delivery_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     payment_id = models.CharField(max_length=255, blank=True, null=True)  
+
+    def calculate_total(self):
+        """
+        Calculate total price of all items in the order, including delivery.
+        """
+        item_total = sum(item.get_total_price() for item in self.items.all())
+
+        if item_total >= settings.FREE_DELIVERY_THRESHOLD:
+            self.delivery_cost = Decimal('0.00')  # ✅ Free delivery
+        else:
+            self.delivery_cost = (Decimal(settings.STANDARD_DELIVERY_PERCENTAGE) / 100) * item_total
+
+        self.total_price = (item_total + self.delivery_cost).quantize(Decimal('0.01'))
+        self.save(update_fields=["total_price", "delivery_cost"])
+        return self.total_price
 
     def save(self, *args, **kwargs):
         """
         Generate a unique order number before saving.
         """
-        if self.order_number ==  self.order_number:
+        if self.order_number:
             self.order_number = self.generate_order_number()
         super().save(*args, **kwargs)
 
@@ -37,18 +53,15 @@ class Order(models.Model):
         """
         Generate a random, unique order number using UUID
         """
-        return uuid.uuid4().hex.upper()
-    
-    def __str__(self):
-        return self.order_number
-    
+        return uuid.uuid4().hex[:12].upper()
+
     def calculate_total(self):
         """
         Calculate total price of all items in the order.
         """
         total = sum(item.get_total_price() for item in self.items.all())
-        self.total_price = total.quantize(Decimal('0.01'))
-        self.save()
+        self.total_price =     self.total_price = Decimal(total).quantize(Decimal('0.01'))
+        self.save(update_fields=["total_price"]) 
         return self.total_price
 
     def __str__(self):

@@ -56,6 +56,11 @@ function updateCart(slug, quantity) {
                 totalElement.textContent = `£${data.total_price.toFixed(2)}`;
             }
 
+            let grandTotalElement = document.getElementById("cart-grand-total");
+            if (grandTotalElement) {
+                grandTotalElement.textContent = `£${data.grand_total.toFixed(2)}`;
+            }
+
             updateNavbarCart(data.grand_total, data.cart_count);
 
             if (data.new_quantity == 0) {
@@ -76,6 +81,42 @@ function updateCart(slug, quantity) {
         }
     })
     .catch((error) => console.error("Error updating cart:", error));
+}
+
+function removeFromCart(slug) {
+    fetch("/cart/update/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ slug: slug, quantity: 0 }),  // ✅ Sends quantity=0 to remove
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        if (data.success) {
+            // Remove item row from cart
+            let itemRow = document.getElementById(`cart-item-${slug}`);
+            if (itemRow) {
+                itemRow.remove();
+            }
+
+            // Update Navbar Grand Total & Cart Count
+            updateNavbarCart(data.grand_total, data.cart_count);
+
+            // Show Empty Cart Message if Needed
+            if (data.cart_empty) {
+                document.getElementById("cart-container").innerHTML = `
+                    <div class="text-center mt-5">
+                        <h4>Your cart is empty</h4>
+                        <a href="/products/" class="btn btn-primary mt-3">Shop Now</a>
+                    </div>`;
+            }
+        } else {
+            alert(data.error);  // ✅ Show error if any
+        }
+    })
+    .catch((error) => console.error("Error removing item:", error));
 }
 
 // Event Listeners for Add, Remove, and Update Buttons
@@ -110,9 +151,11 @@ document.querySelectorAll(".quantity-input").forEach((input) => {
 });
 
     // Remove Item from Cart
-document.querySelectorAll(".remove-item").forEach((button) => {
-    button.addEventListener("click", function () {
-        let slug = this.dataset.slug;
-        updateCart(slug, 0);
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".remove-item").forEach((button) => {
+        button.addEventListener("click", function () {
+            let slug = this.dataset.slug;
+            removeFromCart(slug);
+        });
     });
 });

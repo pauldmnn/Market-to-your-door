@@ -1,32 +1,58 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
+{% load static %}
 
 {% block content %}
-<div class="overlay"></div>
-<div class="container mt-5">
-    <h2 class="checkout-container">Checkout</h2>
+<div class="container">
+    <h2 class="text-center my-4">Checkout</h2>
 
-    <!-- Order Summary -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">Order Summary</h5>
-            {% for item in cart_items %}
-                <div class="d-flex justify-content-between">
-                    <p>{{ item.product.name }} (x{{ item.quantity }})</p>
-                    <p>£{{ item.get_total_price|floatformat:2 }}</p>
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Shipping Details</h4>
+            <form method="POST" action="{% url 'checkout' %}">
+                {% csrf_token %}
+                
+                <div class="card p-3 shadow-sm">
+                    {{ form.as_p }}
                 </div>
-            {% endfor %}
-            <hr>
-            <h5 class="text-end">Total: <strong>£{{ overall_total|floatformat:2 }}</strong></h5>
+
+                <button type="submit" class="btn btn-primary mt-3 w-100">Go to Payment</button>
+            </form>
+        </div>
+
+        <div class="col-md-6">
+            <h4>Order Summary</h4>
+            <div class="card p-3 shadow-sm">
+                <ul class="list-group">
+                    {% for item in cart_items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ item.product.name }}</strong> <br>
+                                {{ item.quantity }} x £{{ item.product.price|floatformat:2 }}
+                            </div>
+                            <span class="badge bg-secondary">£{{ item.get_total_price|floatformat:2 }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <div class="mt-4">
+                    <h5 class="text-end">Subtotal: <span id="subtotal">£{{ subtotal|floatformat:2 }}</span></h5>
+                    {% if delivery_cost == 0 %}
+                        <h5 class="text-end text-success">FREE Delivery</h5>
+                    {% else %}
+                        <h5 class="text-end">Delivery: <span id="delivery-cost">£{{ delivery_cost|floatformat:2 }}</span></h5>
+                    {% endif %}
+                    <h3 class="text-end mt-2">Grand Total: <span id="grand-total">£{{ grand_total|floatformat:2 }}</span></h3>
+                </div>
+            </div>
         </div>
     </div>
-
-    <!-- Shipping Address Form -->
-    <form method="POST">
-        {% csrf_token %}
-        <h5>Shipping Address</h5>
-        {{ form|crispy }}
-        <button type="submit" class="btn btn-primary btn-lg">Place Order</button>
-    </form>
 </div>
+{% endblock %}
+
+{% block postloadjs %}
+    {{ block.super }}
+    {{ stripe_public_key|json_script:"id_stripe_public_key" }}
+    {{ client_secret|json_script:"id_client_secret" }}
+
+
 {% endblock %}

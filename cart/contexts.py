@@ -34,3 +34,11 @@ def cart_contents(request):
         "cart_count": int(cart_count)
     }
 
+def site_wide_messages(request):
+    """
+    Context processor to display free delivery message across all pages.
+    """
+    return {
+        "free_delivery_message": f"Free delivery on orders over £{settings.FREE_DELIVERY_THRESHOLD}"
+    }
+
