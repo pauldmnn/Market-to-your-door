@@ -127,6 +127,11 @@ def payment_success(request):
         order.status = "paid"
         order.payment_id = session.payment_intent
         order.save()
+
+        if request.user.is_authenticated:
+            Cart.objects.filter(user=request.user).delete()
+        else:
+            request.session["cart"] = {}
         
         messages.success(request, "Payment successful! Your order has been placed.")
         return redirect("order_success", order_id=order.id)
