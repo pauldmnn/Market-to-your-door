@@ -1,48 +1,88 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const stripe = Stripe(document.getElementById("id_stripe_public_key").textContent);
-    const clientSecret = document.getElementById("id_client_secret").textContent;
-
-    if (!clientSecret) {
-        console.error("Error: Client secret not found.");
+    // Ensure that global variables STRIPE_PUBLIC_KEY and CLIENT_SECRET are available
+    if (!window.STRIPE_PUBLIC_KEY) {
+        console.error("Stripe public key is missing.");
+        return;
+    }
+    if (!window.CLIENT_SECRET) {
+        console.error("Stripe client secret is missing.");
         return;
     }
 
+    // Initialize Stripe with the public key
+    const stripe = Stripe(window.STRIPE_PUBLIC_KEY);
     const elements = stripe.elements();
-    const cardElement = elements.create("card", { hidePostalCode: true });
-    cardElement.mount("#card-element");
+
+    // Custom styling for the card element
+    const style = {
+        base: {
+            color: '#000',
+            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+            fontSize: '16px',
+            '::placeholder': { color: '#aab7c4' },
+        },
+        invalid: {
+            color: '#dc3545',
+            iconColor: '#dc3545',
+        },
+    };
+
+    // Create and mount the card element
+    const card = elements.create('card', { style: style });
+    const cardContainer = document.getElementById('card-element');
+    if (!cardContainer) {
+        console.error("Card element container (#card-element) not found.");
+        return;
+    }
+    card.mount('#card-element');
+
+    // Handle real-time validation errors from the card element
+    card.addEventListener('change', function (event) {
+        const errorDiv = document.getElementById('card-errors');
+        if (event.error) {
+            errorDiv.innerHTML = `<span class="text-danger"><i class="fas fa-exclamation-circle"></i> ${event.error.message}</span>`;
+        } else {
+            errorDiv.textContent = '';
+        }
+    });
 
     // Handle form submission
-    const form = document.getElementById("payment-form");
-    const submitButton = document.getElementById("submit-button");
-    const errorMessage = document.getElementById("error-message");
-
-    form.addEventListener("submit", async function (event) {
+    const form = document.getElementById('payment-form');
+    form.addEventListener('submit', async function (event) {
         event.preventDefault();
+        const submitButton = document.getElementById('submit-button');
         submitButton.disabled = true;
         submitButton.textContent = "Processing...";
 
-        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        const nameField = document.getElementById("name_on_card");
+        if (!nameField) {
+            console.error("Name on card field is missing.");
+            submitButton.disabled = false;
+            submitButton.textContent = "Pay Now";
+            return;
+        }
+        const cardholderName = nameField.value.trim();
+
+        // Confirm the card payment using the PaymentIntent's client secret
+        const { error, paymentIntent } = await stripe.confirmCardPayment(CLIENT_SECRET, {
             payment_method: {
-                card: cardElement,
-                billing_details: {
-                    name: document.querySelector("input[name='full_name']").value,
-                    email: document.querySelector("input[name='email']").value,
-                    address: {
-                        line1: document.querySelector("input[name='address']").value,
-                        city: document.querySelector("input[name='city']").value,
-                        postal_code: document.querySelector("input[name='postal_code']").value,
-                        country: document.querySelector("input[name='country']").value,
-                    },
-                },
+                card: card,
+                billing_details: { name: cardholderName },
             },
         });
 
         if (error) {
-            errorMessage.textContent = error.message;
-            submitButton.disabled = false;
-            submitButton.textContent = "Pay Now";
-        } else {
+            console.error("Payment error:", error.message);
+            document.getElementById("card-errors").textContent = error.message;
+            document.getElementById("submit-button").disabled = false;
+            document.getElementById("submit-button").textContent = "Pay Now";
+        } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+            console.log("Payment succeeded:", paymentIntent);
+            // Payment succeeded, redirect or submit the form
             window.location.href = "/checkout/success/";
+        } else {
+            document.getElementById("submit-button").disabled = false;
+            document.getElementById("submit-button").textContent = "Pay Now";
         }
     });
 });

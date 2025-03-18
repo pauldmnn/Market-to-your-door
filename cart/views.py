@@ -11,14 +11,21 @@ def view_cart(request):
     """
     A view to return the cart page with items from the Cart model.
     """
-    cart_items = Cart.objects.filter(user=request.user)
-    overall_total = sum(item.product.price * Decimal(item.quantity) for item in cart_items)
+    cart_items = []
+    overall_total = Decimal("0.00")
+    if request.user.is_authenticated:
+        # Load cart from the database
+        cart_items = Cart.objects.filter(user=request.user)
+        overall_total = sum(item.product.price * Decimal(item.quantity) for item in cart_items)
 
-    context = {
-        'cart_items': cart_items,
-        'overall_total': round(float(overall_total), 2),
-    }
-    return render(request, 'cart/cart.html', context)
+    else:
+        # Load cart from session
+        session_cart = request.session.get("cart", {})
+        products = Product.objects.filter(id__in=session_cart.keys())
+        cart_items = [{"product": p, "quantity": session_cart[str(p.id)], "total": p.price * Decimal(session_cart[str(p.id)])} for p in products]
+        overall_total = sum(item["total"] for item in cart_items)
+
+    return render(request, "cart/cart.html", {"cart_items": cart_items, "overall_total": round(overall_total, 2)})
 
 
 def add_to_cart(request, slug):
@@ -38,19 +45,32 @@ def add_to_cart(request, slug):
     except ValueError:
         quantity = Decimal('1')
 
-    cart_item, created = Cart.objects.get_or_create(
-        user=request.user, product=product,
-        defaults={'quantity': float(quantity)}
-    )
+    if request.user.is_authenticated:
+        cart_item, created = Cart.objects.get_or_create(
+            user=request.user, product=product,
+            defaults={'quantity': float(quantity)}
+        )
 
-    if not created:
-        new_total_quantity = cart_item.quantity + quantity
+        if not created:
+            new_total_quantity = cart_item.quantity + quantity
+            if new_total_quantity > product.inventory:
+                messages.error(request, f"Only {product.inventory} {product.name}(s) are available.")
+                return redirect(request.META.get('HTTP_REFERER', '/'))
+
+            cart_item.quantity = new_total_quantity
+            cart_item.save()
+    
+    else:
+        cart = request.session.get("cart", {})
+        current_quantity = Decimal(cart.get(str(product.id), 0))
+        new_total_quantity = current_quantity + quantity
+
         if new_total_quantity > product.inventory:
             messages.error(request, f"Only {product.inventory} {product.name}(s) are available.")
             return redirect(request.META.get('HTTP_REFERER', '/'))
 
-        cart_item.quantity = new_total_quantity
-        cart_item.save()
+        cart[str(product.id)] = float(new_total_quantity)
+        request.session["cart"] = cart
 
     messages.success(request, f"{product.name} (x{quantity}) has been added to your cart.")
 
@@ -85,11 +105,9 @@ def cart_detail(request):
 
 def update_cart(request):
     """
-    A view to update and remove products from the cart
+    A view to update and remove products from the cart.
     """
-
     if request.method == "POST":
-
         try:
             data = json.loads(request.body)
             slug = data.get("slug")
@@ -99,27 +117,51 @@ def update_cart(request):
                 return JsonResponse({"success": False, "error": "Invalid product slug."})
 
             product = get_object_or_404(Product, slug=slug)
-            cart_item = Cart.objects.filter(user=request.user, product=product).first()
 
-            if not cart_item:
-                return JsonResponse({"success": False, "error": "Product not found in cart."})
+            if request.user.is_authenticated:
+                #  LOGGED-IN USER: Update database cart
+                cart_item = Cart.objects.filter(user=request.user, product=product).first()
 
-            if new_quantity < 0:
-                new_quantity = 0
+                if not cart_item:
+                    return JsonResponse({"success": False, "error": "Product not found in cart."})
 
-            if new_quantity > product.inventory:
-                return JsonResponse({"success": False, "error": f"Only {product.inventory} available in stock."})
+                if new_quantity < 0:
+                    new_quantity = 0
 
-            if new_quantity == 0:
-                cart_item.delete()
+                if new_quantity > product.inventory:
+                    return JsonResponse({"success": False, "error": f"Only {product.inventory} available in stock."})
+
+                if new_quantity == 0:
+                    cart_item.delete()
+                else:
+                    cart_item.quantity = float(new_quantity)
+                    cart_item.save()
+
+                cart_items = Cart.objects.filter(user=request.user)
+
             else:
-                cart_item.quantity = float(new_quantity)
-                cart_item.save()
+                # ANONYMOUS USER: Update session cart
+                cart = request.session.get("cart", {})
+                if str(product.id) not in cart:
+                    return JsonResponse({"success": False, "error": "Product not found in session cart."})
 
-            cart_items = Cart.objects.filter(user=request.user)
-            grand_total = sum(item.product.price * Decimal(item.quantity) for item in cart_items)
+                if new_quantity < 0:
+                    new_quantity = 0
+
+                if new_quantity > product.inventory:
+                    return JsonResponse({"success": False, "error": f"Only {product.inventory} available in stock."})
+
+                if new_quantity == 0:
+                    del cart[str(product.id)]
+                else:
+                    cart[str(product.id)] = float(new_quantity)
+
+                request.session["cart"] = cart 
+                cart_items = [{"product": p, "quantity": cart[str(p.id)], "total": p.price * Decimal(cart[str(p.id)])} for p in Product.objects.filter(id__in=cart.keys())]
+
+            grand_total = sum(item["total"] for item in cart_items) if not request.user.is_authenticated else sum(item.product.price * Decimal(item.quantity) for item in cart_items)
             total_price = product.price * Decimal(new_quantity)
-            cart_count = sum(Decimal(item.quantity) for item in cart_items)
+            cart_count = sum(Decimal(item["quantity"]) for item in cart_items) if not request.user.is_authenticated else sum(Decimal(item.quantity) for item in cart_items)
 
             return JsonResponse({
                 "success": True,

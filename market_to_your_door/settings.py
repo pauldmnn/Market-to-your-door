@@ -11,11 +11,15 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+
 
 import os
 
 if os.path.isfile('env.py'):
     import env
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -173,9 +177,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # Stripe API Keys
 
 STRIPE_CURRENCY = 'gbp'
-STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', '')
-STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
-STRIPE_WH_SECRET = os.getenv('STRIPE_WH_SECRET', '')
+STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 STRIPE_SUCCESS_URL = "http://127.0.0.1:8000/checkout/success/"
 STRIPE_CANCEL_URL = "http://127.0.0.1:8000/checkout/cancel/"
 if not STRIPE_PUBLIC_KEY or not STRIPE_SECRET_KEY:
