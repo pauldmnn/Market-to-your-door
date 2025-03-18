@@ -64,7 +64,14 @@
 <!-- Load Stripe.js -->
 <script src="https://js.stripe.com/v3/"></script>
 <!-- Load your custom Stripe integration script -->
+{% if order %}
+<script>
+    window.ORDER_ID = "{{ order.id }}";
+    console.log("Order ID:", window.ORDER_ID);
+</script>
+{% endif %}
 {% if show_payment_form %}
     <script src="{% static 'js/stripe.js' %}"></script>
 {% endif %}
+
 {% endblock %}

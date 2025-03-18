@@ -72,17 +72,21 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         if (error) {
-            console.error("Payment error:", error.message);
-            document.getElementById("card-errors").textContent = error.message;
-            document.getElementById("submit-button").disabled = false;
-            document.getElementById("submit-button").textContent = "Pay Now";
+            document.getElementById("card-errors").innerHTML = `<span class="text-danger">${error.message}</span>`;
+            submitButton.disabled = false;
+            submitButton.textContent = "Pay Now";
         } else if (paymentIntent && paymentIntent.status === 'succeeded') {
             console.log("Payment succeeded:", paymentIntent);
-            // Payment succeeded, redirect or submit the form
-            window.location.href = "/checkout/success/";
+            // Redirect to order success page using the global ORDER_ID
+            if (window.ORDER_ID) {
+                window.location.href = "/checkout/order-success/" + window.ORDER_ID + "/";
+            } else {
+                // Fallback redirection if ORDER_ID is not defined
+                window.location.href = "/checkout/success/";
+            }
         } else {
-            document.getElementById("submit-button").disabled = false;
-            document.getElementById("submit-button").textContent = "Pay Now";
+            submitButton.disabled = false;
+            submitButton.textContent = "Pay Now";
         }
     });
 });
