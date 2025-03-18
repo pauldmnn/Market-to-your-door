@@ -29,6 +29,7 @@ def checkout(request):
 
     order = None
     client_secret = None
+    show_payment_form = False
 
     if request.method == "POST":
         form = ShippingAddressForm(request.POST)
@@ -36,20 +37,14 @@ def checkout(request):
             # Create the shipping address instance but don't save yet
             shipping_address = form.save(commit=False)
             shipping_address.user = request.user
+            shipping_address.save()
 
             # Create an order (without shipping address first)
             order = Order.objects.create(
                 user=request.user,
-                total_price=grand_total
+                total_price=grand_total,
+                shipping_address=shipping_address
             )
-            
-            # Now assign the order to the shipping address and save it
-            shipping_address.order = order
-            shipping_address.save()
-            
-            # Optionally update the order to reference the shipping address
-            order.shipping_address = shipping_address
-            order.save()
 
             # Create Stripe PaymentIntent
             payment_intent = stripe.PaymentIntent.create(
@@ -58,6 +53,10 @@ def checkout(request):
                 metadata={"order_id": order.id},
             )
             client_secret = payment_intent.client_secret
+
+            show_payment_form = True
+        else:
+            messages.error(request, "Please correct the errors below.")
 
     else:
         form = ShippingAddressForm()
@@ -71,6 +70,7 @@ def checkout(request):
         "order": order,
         "client_secret": client_secret,
         "stripe_public_key": settings.STRIPE_PUBLIC_KEY,
+        "show_payment_form": show_payment_form,
     })
 
 

@@ -7,23 +7,25 @@
     <div class="row">
         <!-- Left Column: Shipping & Payment Form -->
         <div class="col-md-6">
-            <h4>Shipping & Payment Details</h4>
+            <h4>Shipping Details</h4>
             <form id="payment-form" method="POST">
                 {% csrf_token %}
                 <div class="card p-3 mb-3">
                     {{ form.as_p }}
                 </div>
-                <div class="card p-3 mb-3">
-                    <label for="name_on_card">Name on Card</label>
-                    <input type="text" id="name_on_card" name="name_on_card" placeholder="Name on Card" required>
-                    <h5>Card Details</h5>
-                    <!-- Stripe will mount the card element here -->
-                    <div id="card-element"></div>
-                    <div id="card-errors" role="alert" class="text-danger mt-2"></div>
-                </div>
-                <button id="submit-button" class="btn btn-primary btn-block">Pay Now</button>
-                <input type="hidden" id="payment-method" name="payment_method">
-
+                {% if show_payment_form %}
+                    <h5>Payment Details</h5>
+                    <div class="card p-3 mb-3">
+                        <label for="name_on_card">Name on Card</label>
+                        <input type="text" id="name_on_card" name="name_on_card" placeholder="Name on Card" required>
+                        <!-- Stripe will mount the card element here -->
+                        <div id="card-element"></div>
+                        <div id="card-errors" role="alert" class="text-danger mt-2"></div>
+                    </div>
+                    <button id="submit-button" class="btn btn-primary btn-block">Pay Now</button>
+                {% else %}
+                    <button type="submit" class="btn btn-primary btn-block">Submit Shipping Details</button>
+                {% endif %}
             </form>
         </div>
         <!-- Right Column: Order Summary -->
@@ -61,6 +63,8 @@
 
 <!-- Load Stripe.js -->
 <script src="https://js.stripe.com/v3/"></script>
-<!-- Load your custom Stripe script -->
-<script src="{% static 'js/stripe.js' %}"></script>
+<!-- Load your custom Stripe integration script -->
+{% if show_payment_form %}
+    <script src="{% static 'js/stripe.js' %}"></script>
+{% endif %}
 {% endblock %}
