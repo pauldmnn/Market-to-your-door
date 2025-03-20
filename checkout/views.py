@@ -1,4 +1,5 @@
 import stripe
+import json
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
@@ -168,20 +169,16 @@ def order_success(request, order_id):
 def stripe_webhook(request):
     payload = request.body
     sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
-    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
+    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET  # Ensure this is set in settings.py
 
     try:
         event = stripe.Webhook.construct_event(
             payload, sig_header, endpoint_secret
         )
-    except ValueError:
-        return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError:
+    except (ValueError, stripe.error.SignatureVerificationError):
         return HttpResponse(status=400)
 
-    # Use the handler class to process the event
     handler = StripeWebhookHandler(event)
     result = handler.handle_event()
-    print(result)  # For debugging/logging
-
+    print(result)  
     return HttpResponse(status=200)

@@ -36,7 +36,7 @@ SECRET_KEY = 'django-insecure-+880rl3j$$79zl16$w)imc7!z%uhc%y+$htb2)so5$=+6zn%ca
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '127.0.0.1:8000',
+    '127.0.0.1',
     'localhost',
     ]
 
@@ -188,10 +188,14 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 STRIPE_CURRENCY = 'gbp'
 STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 STRIPE_SUCCESS_URL = "http://127.0.0.1:8000/checkout/success/"
 STRIPE_CANCEL_URL = "http://127.0.0.1:8000/checkout/cancel/"
 if not STRIPE_PUBLIC_KEY or not STRIPE_SECRET_KEY:
-    raise ValueError(" Stripe API keys are missing from the environment variables!")
+    raise ValueError("Stripe API keys are missing from the environment variables!")
+if not STRIPE_WEBHOOK_SECRET:
+    raise ValueError("Stripe webhook secret is missing from the environment variables!")
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
