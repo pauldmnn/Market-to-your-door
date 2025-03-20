@@ -1,15 +1,14 @@
-document.addEventListener("DOMContentLoaded", function () {
-    // Ensure that global variables STRIPE_PUBLIC_KEY and CLIENT_SECRET are available
+function initStripeElements(clientSecret) {
+    // Use the already set global STRIPE_PUBLIC_KEY
     if (!window.STRIPE_PUBLIC_KEY) {
         console.error("Stripe public key is missing.");
         return;
     }
-    if (!window.CLIENT_SECRET) {
+    if (!clientSecret) {
         console.error("Stripe client secret is missing.");
         return;
     }
 
-    // Initialize Stripe with the public key
     const stripe = Stripe(window.STRIPE_PUBLIC_KEY);
     const elements = stripe.elements();
 
@@ -36,17 +35,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     card.mount('#card-element');
 
-    // Handle real-time validation errors from the card element
+    // Handle real-time validation errors
     card.addEventListener('change', function (event) {
         const errorDiv = document.getElementById('card-errors');
         if (event.error) {
-            errorDiv.innerHTML = `<span class="text-danger"><i class="fas fa-exclamation-circle"></i> ${event.error.message}</span>`;
+            errorDiv.innerHTML = `<span class="text-danger">${event.error.message}</span>`;
         } else {
             errorDiv.textContent = '';
         }
     });
 
-    // Handle form submission
+    // Handle payment form submission
     const form = document.getElementById('payment-form');
     form.addEventListener('submit', async function (event) {
         event.preventDefault();
@@ -63,8 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         const cardholderName = nameField.value.trim();
 
-        // Confirm the card payment using the PaymentIntent's client secret
-        const { error, paymentIntent } = await stripe.confirmCardPayment(CLIENT_SECRET, {
+        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
             payment_method: {
                 card: card,
                 billing_details: { name: cardholderName },
@@ -77,11 +75,9 @@ document.addEventListener("DOMContentLoaded", function () {
             submitButton.textContent = "Pay Now";
         } else if (paymentIntent && paymentIntent.status === 'succeeded') {
             console.log("Payment succeeded:", paymentIntent);
-            // Redirect to order success page using the global ORDER_ID
             if (window.ORDER_ID) {
                 window.location.href = "/checkout/order-success/" + window.ORDER_ID + "/";
             } else {
-                // Fallback redirection if ORDER_ID is not defined
                 window.location.href = "/checkout/success/";
             }
         } else {
@@ -89,4 +85,4 @@ document.addEventListener("DOMContentLoaded", function () {
             submitButton.textContent = "Pay Now";
         }
     });
-});
+}

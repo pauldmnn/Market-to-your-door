@@ -10,17 +10,14 @@ from .forms import ShippingAddressForm
 from decimal import Decimal
 from django.conf import settings
 from django.http import JsonResponse
-from .webhook_handlers import StripeWebhookHandler
+from checkout.webhook_handlers import StripeWebhookHandler
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 def checkout(request):
-    """
-    Handles the checkout process and integrates Stripe for payment.
-    """
+    # Retrieve cart items for the current user
     cart_items = Cart.objects.filter(user=request.user)
-
     if not cart_items.exists():
         messages.error(request, "Your cart is empty!")
         return redirect("cart_detail")
@@ -31,26 +28,32 @@ def checkout(request):
                      else (Decimal(settings.STANDARD_DELIVERY_PERCENTAGE) / 100) * subtotal)
     grand_total = subtotal + delivery_cost
 
-    order = None
     client_secret = None
-    show_payment_form = False
 
     if request.method == "POST":
         form = ShippingAddressForm(request.POST)
         if form.is_valid():
-            # Create the shipping address instance but don't save yet
+            # Save shipping address
             shipping_address = form.save(commit=False)
             shipping_address.user = request.user
             shipping_address.save()
 
-            # Create an order (without shipping address first)
+            # Create an order
             order = Order.objects.create(
                 user=request.user,
                 total_price=grand_total,
                 shipping_address=shipping_address
             )
 
-            # Create Stripe PaymentIntent
+            # Create OrderItems for each cart item
+            for cart_item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=cart_item.product,
+                    quantity=cart_item.quantity
+                )
+
+            # Create a Stripe PaymentIntent (amount in cents)
             payment_intent = stripe.PaymentIntent.create(
                 amount=int(grand_total * 100),
                 currency="gbp",
@@ -58,23 +61,25 @@ def checkout(request):
             )
             client_secret = payment_intent.client_secret
 
-            show_payment_form = True
+            # Return JSON response with client_secret and order_id
+            return JsonResponse({
+                "client_secret": client_secret,
+                "order_id": order.id,
+            })
         else:
-            messages.error(request, "Please correct the errors below.")
-
+            errors = form.errors.as_json()
+            return JsonResponse({"errors": errors}, status=400)
     else:
         form = ShippingAddressForm()
 
+    # For GET requests, simply render the checkout page
     return render(request, "checkout/checkout.html", {
         "form": form,
         "cart_items": cart_items,
         "subtotal": round(float(subtotal), 2),
         "delivery_cost": round(float(delivery_cost), 2),
         "grand_total": round(float(grand_total), 2),
-        "order": order,
-        "client_secret": client_secret,
         "stripe_public_key": settings.STRIPE_PUBLIC_KEY,
-        "show_payment_form": show_payment_form,
     })
 
 
@@ -154,11 +159,12 @@ def payment_cancel(request):
 
 
 def order_success(request, order_id):
-    """
-    Displays the order success page where the user can see their order summary and grand total.
-    """
     order = get_object_or_404(Order, id=order_id, user=request.user)
     order_items = OrderItem.objects.filter(order=order)
+
+    # Clear Cart after successful order
+    Cart.objects.filter(user=request.user).delete()
+
     return render(request, "checkout/order_success.html", {
         "order": order,
         "order_items": order_items,
@@ -167,18 +173,27 @@ def order_success(request, order_id):
 
 @csrf_exempt
 def stripe_webhook(request):
+    """
+    Handle Stripe webhooks
+    """
     payload = request.body
-    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
-    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET  # Ensure this is set in settings.py
+    sig_header = request.headers.get('Stripe-Signature')
+    webhook_secret = settings.STRIPE_WEBHOOK_SECRET
 
     try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, endpoint_secret
-        )
-    except (ValueError, stripe.error.SignatureVerificationError):
+        event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+    except ValueError:
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError:
         return HttpResponse(status=400)
 
-    handler = StripeWebhookHandler(event)
-    result = handler.handle_event()
-    print(result)  
-    return HttpResponse(status=200)
+    handler = StripeWebhookHandler(request)
+    event_type = event['type']
+
+    event_map = {
+        'payment_intent.succeeded': handler.handle_payment_intent_succeeded,
+        'payment_intent.payment_failed': handler.handle_payment_intent_failed,
+    }
+
+    event_handler = event_map.get(event_type, handler.handle_event)
+    return event_handler(event)

@@ -1,39 +1,56 @@
 import stripe
-from django.shortcuts import get_object_or_404
-from .models import Order
+from django.http import HttpResponse
+from checkout.models import Order, OrderItem
+from cart.models import Cart
 
 class StripeWebhookHandler:
-    """
-    Class-based handler for processing Stripe webhook events.
-    """
+    """Handle Stripe webhooks"""
 
-    def __init__(self, event):
-        self.event = event
+    def __init__(self, request):
+        self.request = request
 
-    def handle_event(self):
-        event_type = self.event.get("type")
-        if event_type == "payment_intent.succeeded":
-            return self.handle_payment_intent_succeeded()
-        elif event_type == "payment_intent.payment_failed":
-            return self.handle_payment_intent_failed()
-        else:
-            return self.handle_default_event()
+    def handle_event(self, event):
+        """
+        Handle generic/unknown webhook events
+        """
+        print(f"Unhandled event type: {event['type']}")
+        return HttpResponse(content=f"Unhandled event: {event['type']}", status=200)
 
-    def handle_payment_intent_succeeded(self):
-        data_object = self.event["data"]["object"]
-        order_id = data_object.get("metadata", {}).get("order_id")
+    def handle_payment_intent_succeeded(self, event):
+        """
+        Handle successful payment
+        """
+        intent = event.data.object
+        order_id = intent.metadata.get("order_id")
+
         if not order_id:
-            return "Order ID missing; cannot process success event."
-        order = get_object_or_404(Order, id=order_id)
-        order.status = "paid"
-        order.payment_id = data_object.get("id")
-        order.save()
-        return f"Order {order.order_number} marked as paid."
+            print("Order ID missing from metadata!")
+            return HttpResponse(status=400)
 
-    def handle_payment_intent_failed(self):
-        data_object = self.event["data"]["object"]
-        error_message = data_object.get("last_payment_error", {}).get("message", "Unknown error")
-        return f"Payment failed: {error_message}"
+        try:
+            order = Order.objects.get(id=order_id)
+            order.status = "paid"
+            order.payment_id = intent.id
+            order.save()
+
+            # Delete items from the cart after payment
+            Cart.objects.filter(user=order.user).delete()
+
+            print(f"Payment successful for Order {order.id}")
+            return HttpResponse(status=200)
+
+        except Order.DoesNotExist:
+            print(f"Order {order_id} not found!")
+            return HttpResponse(status=400)
+
+    def handle_payment_intent_failed(self, event):
+        """
+        Handle failed payment
+        """
+        intent = event.data.object
+        print(f"Payment failed: {intent['id']}")
+        return HttpResponse(status=200)
+
 
     def handle_default_event(self):
         return f"Unhandled event type: {self.event.get('type')}"

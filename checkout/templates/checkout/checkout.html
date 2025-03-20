@@ -1,34 +1,40 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 {% load static %}
 
 {% block content %}
 <div class="container my-4">
     <h2 class="text-center">Checkout</h2>
+
     <div class="row">
-        <!-- Left Column: Shipping & Payment Form -->
+        <!-- Shipping Details Form -->
         <div class="col-md-6">
             <h4>Shipping Details</h4>
-            <form id="payment-form" method="POST">
+            <form id="checkout-form" method="POST">
                 {% csrf_token %}
-                <div class="card p-3 mb-3">
-                    {{ form.as_p }}
+                {{ form|crispy }}
+
+                <h4 class="mt-4">Payment Details</h4>
+                <div class="form-group">
+                    <label for="name_on_card">Name on Card</label>
+                    <input type="text" id="name_on_card" name="name_on_card" class="form-control" required>
+                    <!-- Stripe Card Element -->
+                    <div id="card-element" class="my-3"></div>
+                    <div id="card-errors" role="alert" class="text-danger"></div>
+
+                    <input type="text" id="client-secret">
                 </div>
-                {% if show_payment_form %}
-                    <h5>Payment Details</h5>
-                    <div class="card p-3 mb-3">
-                        <label for="name_on_card">Name on Card</label>
-                        <input type="text" id="name_on_card" name="name_on_card" placeholder="Name on Card" required>
-                        <!-- Stripe will mount the card element here -->
-                        <div id="card-element"></div>
-                        <div id="card-errors" role="alert" class="text-danger mt-2"></div>
-                    </div>
-                    <button id="submit-button" class="btn btn-primary btn-block">Pay Now</button>
-                {% else %}
-                    <button type="submit" class="btn btn-primary btn-block">Submit Shipping Details</button>
-                {% endif %}
+                
+                <!-- Stripe Card Element -->
+                <div id="card-element" class="my-3"></div>
+                <div id="card-errors" role="alert" class="text-danger"></div>
+
+                <input type="hidden" id="client-secret">
+                <button type="submit" id="submit-button" class="btn btn-primary mt-3">Pay Now</button>
             </form>
         </div>
-        <!-- Right Column: Order Summary -->
+
+        <!-- Order Summary -->
         <div class="col-md-6">
             <h4>Order Summary</h4>
             <div class="card p-3">
@@ -45,7 +51,7 @@
                 </ul>
                 <div class="mt-3">
                     <p>Subtotal: £{{ subtotal|floatformat:2 }}</p>
-                    <p>Delivery: {% if delivery_cost == 0 %}<span class="text-success">FREE Delivery</span>{% else %}£{{ delivery_cost|floatformat:2 }}{% endif %}</p>
+                    <p>Delivery: {% if delivery_cost == 0 %}<span class="text-success">FREE</span>{% else %}£{{ delivery_cost|floatformat:2 }}{% endif %}</p>
                     <h5>Grand Total: £{{ grand_total|floatformat:2 }}</h5>
                 </div>
             </div>
@@ -53,25 +59,10 @@
     </div>
 </div>
 
-<!-- Pass Stripe keys and client secret as global JavaScript variables -->
+<!-- Stripe Keys -->
 <script>
     window.STRIPE_PUBLIC_KEY = "{{ stripe_public_key }}";
-    window.CLIENT_SECRET = "{{ client_secret|default:'' }}";
-    console.log("Stripe Public Key:", window.STRIPE_PUBLIC_KEY);
-    console.log("Client Secret:", window.CLIENT_SECRET);
 </script>
-
-<!-- Load Stripe.js -->
 <script src="https://js.stripe.com/v3/"></script>
-<!-- Load your custom Stripe integration script -->
-{% if order %}
-<script>
-    window.ORDER_ID = "{{ order.id }}";
-    console.log("Order ID:", window.ORDER_ID);
-</script>
-{% endif %}
-{% if show_payment_form %}
-    <script src="{% static 'js/stripe.js' %}"></script>
-{% endif %}
-
+<script src="{% static 'js/checkout.js' %}"></script>
 {% endblock %}
