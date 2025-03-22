@@ -5,36 +5,29 @@
 {% block content %}
 <div class="container my-4">
     <h2 class="text-center">Checkout</h2>
-
     <div class="row">
-        <!-- Shipping Details Form -->
+        <!-- Shipping & Order Summary -->
         <div class="col-md-6">
             <h4>Shipping Details</h4>
             <form id="checkout-form" method="POST">
                 {% csrf_token %}
                 {{ form|crispy }}
 
-                <h4 class="mt-4">Payment Details</h4>
-                <div class="form-group">
+                <h5 class="mt-4">Payment Information</h5>
+                <div id="payment-info">
                     <label for="name_on_card">Name on Card</label>
-                    <input type="text" id="name_on_card" name="name_on_card" class="form-control" required>
-                    <!-- Stripe Card Element -->
-                    <div id="card-element" class="my-3"></div>
-                    <div id="card-errors" role="alert" class="text-danger"></div>
-
-                    <input type="text" id="client-secret">
-                </div>
+                    <input type="text" id="name_on_card" class="form-control" placeholder="Name on Card" required>
                 
-                <!-- Stripe Card Element -->
-                <div id="card-element" class="my-3"></div>
-                <div id="card-errors" role="alert" class="text-danger"></div>
-
-                <input type="hidden" id="client-secret">
-                <button type="submit" id="submit-button" class="btn btn-primary mt-3">Pay Now</button>
+                    <label for="card-element" class="mt-2">Card Details</label>
+                    <div id="card-element" class="form-control"></div>
+                
+                    <div id="card-errors" class="text-danger mt-2" role="alert"></div>
+                
+                    <button id="submit-button" class="btn btn-primary mt-3">Place Order</button>
+                </div>
             </form>
         </div>
 
-        <!-- Order Summary -->
         <div class="col-md-6">
             <h4>Order Summary</h4>
             <div class="card p-3">
@@ -59,7 +52,6 @@
     </div>
 </div>
 
-<!-- Stripe Keys -->
 <script>
     window.STRIPE_PUBLIC_KEY = "{{ stripe_public_key }}";
 </script>
