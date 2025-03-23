@@ -1,6 +1,20 @@
 from django.shortcuts import render, redirect
-from .forms import ProfileForm
+from .forms import UserProfileForm
 from django.contrib.auth.decorators import login_required
+
+@login_required
+def create_profile(request):
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST)
+        if form.is_valid():
+            profile = form.save(commit=False)
+            profile.user = request.user
+            profile.save()
+            return redirect('profile_detail')  # You can create a view for this later
+    else:
+        form = UserProfileForm()
+    return render(request, 'profiles/create_profile.html', {'form': form})
+
 
 @login_required
 def edit_profile(request):
