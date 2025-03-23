@@ -36,14 +36,7 @@ def __init__(self, *args, **kwargs):
 class ShippingAddressForm(forms.ModelForm):
     class Meta:
         model = ShippingAddress
-        fields = ["full_name", 
-                  "address_line1", 
-                  "address_line2", 
-                  "city", 
-                  "postal_code", 
-                  "county", 
-                  "country", 
-                  "phone"]
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

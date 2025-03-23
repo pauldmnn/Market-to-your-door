@@ -1,15 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>Order Successful!</h2>
-    <p>Thank you for your purchase! Here is your order summary:</p>
-    
-    <h3>Order ID: {{ order.id }}</h3>
-    <ul>
-        {% for item in order_items %}
-            <li>{{ item.product.name }} x {{ item.quantity }} - £{{ item.product.price }}</li>
-        {% endfor %}
-    </ul>
+    <div class="container mb-5">  
+        <h2>Order Successful!</h2>
+        <h4>Thank you for your purchase, {{ order.user.username }}! Here is your order summary:</h4>
+        
+        
+        <h3>Order number: {{ order.id }}</h3>
+        <ul>
+            {% for item in order_items %}
+                <li>{{ item.product.name }} x {{ item.quantity }} - £{{ item.product.price }}</li>
+            {% endfor %}
+        </ul>
 
-    <h4>Total Paid: £{{ order.total_price }}</h4>
-    <a href="/">Back to Home</a>
+        <h4>Total Paid: £{{ order.total_price }}</h4>
+        <a href="/">Continue Shopping</a>
+    </div> 
 {% endblock %}

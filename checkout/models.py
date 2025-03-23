@@ -5,6 +5,7 @@ from products.models import Product
 from decimal import Decimal
 from django.conf import settings
 from django.db.models import Sum
+from django_countries.fields import CountryField
 
 
 class Order(models.Model):
@@ -78,9 +79,9 @@ class ShippingAddress(models.Model):
     address_line2 = models.CharField(max_length=255, null=True, blank=True)
     postal_code = models.CharField(max_length=20)
     city = models.CharField(max_length=100)
-    country = models.CharField(max_length=100)
+    country = CountryField(blank_label="(Select country)", default='GB')
     county = models.CharField(max_length=100, null=True, blank=True)
     phone = models.CharField(max_length=20)
 
     def __str__(self):
-        return f"{self.user.username} - {self.address_line_1}, {self.city}"
+        return f"{self.user.username} - {self.address_line1}, {self.city}"
