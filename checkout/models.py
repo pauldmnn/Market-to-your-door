@@ -74,8 +74,8 @@ class OrderItem(models.Model):
 class ShippingAddress(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=255)
-    address_line_1 = models.CharField(max_length=255, null=True, blank=True)
-    address_line_2 = models.CharField(max_length=255, null=True, blank=True)
+    address_line1 = models.CharField(max_length=255, null=True, blank=True)
+    address_line2 = models.CharField(max_length=255, null=True, blank=True)
     postal_code = models.CharField(max_length=20)
     city = models.CharField(max_length=100)
     country = models.CharField(max_length=100)

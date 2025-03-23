@@ -1,56 +1,60 @@
 import stripe
+from django.core.mail import send_mail
+from checkout.models import Order, ShippingAddress, OrderItem
+from products.models import Product
+from django.contrib.auth.models import User
 from django.http import HttpResponse
-from checkout.models import Order, OrderItem
-from cart.models import Cart
+
 
 class StripeWebhookHandler:
-    """Handle Stripe webhooks"""
-
     def __init__(self, request):
         self.request = request
 
     def handle_event(self, event):
-        """
-        Handle generic/unknown webhook events
-        """
-        print(f"Unhandled event type: {event['type']}")
-        return HttpResponse(content=f"Unhandled event: {event['type']}", status=200)
+        """Handle unknown webhook events"""
+        return HttpResponse(status=200)
 
     def handle_payment_intent_succeeded(self, event):
-        """
-        Handle successful payment
-        """
         intent = event.data.object
-        order_id = intent.metadata.get("order_id")
+        metadata = intent.get("metadata", {})
+        order_id = metadata.get("order_id")
 
-        if not order_id:
-            print("Order ID missing from metadata!")
-            return HttpResponse(status=400)
+        # 🔹 Get billing details from the payment method
+        billing_details = intent.get("charges", {}).get("data", [{}])[0].get("billing_details", {})
+        shipping_details = intent.get("shipping", {})
 
         try:
             order = Order.objects.get(id=order_id)
             order.status = "paid"
             order.payment_id = intent.id
+
+            # 🔹 Optionally update billing info on order
+            order.billing_name = billing_details.get("name")
+            order.billing_email = billing_details.get("email")
             order.save()
 
-            # Delete items from the cart after payment
-            Cart.objects.filter(user=order.user).delete()
+            # 🔹 Optionally update shipping address if not stored earlier
+            address = order.shipping_address
+            if not address:
+                address = ShippingAddress.objects.create(
+                    user=order.user,
+                    full_name=shipping_details.get("name"),
+                    address_line1=shipping_details.get("address", {}).get("line1"),
+                    address_line2=shipping_details.get("address", {}).get("line2", ""),
+                    city=shipping_details.get("address", {}).get("city"),
+                    postcode=shipping_details.get("address", {}).get("postal_code"),
+                    country=shipping_details.get("address", {}).get("country"),
+                    phone=shipping_details.get("phone", "")
+                )
+                order.shipping_address = address
+                order.save()
 
-            print(f"Payment successful for Order {order.id}")
             return HttpResponse(status=200)
 
         except Order.DoesNotExist:
-            print(f"Order {order_id} not found!")
-            return HttpResponse(status=400)
+            return HttpResponse(content=f"Order {order_id} not found", status=404)
 
     def handle_payment_intent_failed(self, event):
-        """
-        Handle failed payment
-        """
         intent = event.data.object
-        print(f"Payment failed: {intent['id']}")
+        print(f"Payment failed for: {intent.id}")
         return HttpResponse(status=200)
-
-
-    def handle_default_event(self):
-        return f"Unhandled event type: {self.event.get('type')}"
