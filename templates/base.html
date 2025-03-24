@@ -65,11 +65,12 @@
                   <a class="nav-link" href="">My Account</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="">Logout</a>
+                  <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
                 </li>
               {% else %}
                 <li class="nav-item">
-                  <a class="nav-link" href="">Login</a>
+                  <!-- Trigger modal for login -->
+                  <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
                 </li>
                 <li class="nav-item">
                   <a href="{% url 'create_profile' %}" class="nav-link">Register</a>
@@ -77,28 +78,53 @@
               {% endif %}
               <li class="list-inline-item">
                 <a class="{% if grand_total %} text-info font-weight-bold {% else %} text-black {% endif %} nav-link" href="{% url 'cart_detail' %}">
-                    <div class="text-center">
-                        <div><i class="fa-duotone fa-solid fa-cart-shopping fa-lg"></i></div>
-                        <p class="my-0" id="nav-grand-total">
-                            {% if grand_total %}
-                                £{{ grand_total|floatformat:2 }}
-                            {% else %}
-                                £0.00
-                            {% endif %}
-                        </p>
-                        <!-- <span id="cart-item-count" class="badge bg-primary">{{ cart_count }}</span> -->
-                    </div>
+                  <div class="text-center">
+                    <div><i class="fa-duotone fa-solid fa-cart-shopping fa-lg"></i></div>
+                    <p class="my-0" id="nav-grand-total">
+                        {% if grand_total %}
+                            £{{ grand_total|floatformat:2 }}
+                        {% else %}
+                            £0.00
+                        {% endif %}
+                    </p>
+                  </div>
                 </a>
-              </li>
-              
+              </li> 
             </ul>
           </div>
         </div>
       </nav>
+      
       <div class="bg-dark text-light text-center py-2">
         <p class="mb-0">{{ free_delivery_message }}</p>
       </div>
     </header>
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4">
+          <div class="modal-header">
+            <h5 class="modal-title">Login</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form method="POST" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="login_email" class="form-label">Email</label>
+                <input type="email" name="login" class="form-control" id="login_email" required>
+              </div>
+              <div class="mb-3">
+                <label for="login_password" class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" id="login_password" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
 
     {% if messages %}
       <div class="message-container"></div>
