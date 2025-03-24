@@ -2,11 +2,12 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-  <div class="container mt-4">
-    <h2>Create Your Profile</h2>
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      {{ form|crispy }}
+<div class="container mt-4">
+    <h2>Create / Update Your Profile</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary mt-2">Save Profile</button>
     </form>
-  </div>
+</div>
 {% endblock %}

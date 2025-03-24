@@ -1,4 +1,5 @@
 {% load static %}
+{% load crispy_forms_tags %}
 
 <!doctype html>
 <html lang="en">
@@ -126,6 +127,7 @@
         </div>
       </div>
     </div>
+
         <!-- Logout Confirmation Modal -->
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -142,13 +144,11 @@
               {% csrf_token %}
               <button type="submit" class="btn btn-danger">Yes, Log me out</button>
             </form>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Continue Shopping</button>
+            <button type="button" class="btn btn-primaty" data-bs-dismiss="modal">No, Continue Shopping</button>
           </div>
         </div>
       </div>
     </div>
-
-
 
     {% if messages %}
       <div class="message-container"></div>
@@ -164,6 +164,5 @@
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
             crossorigin="anonymous">
     </script>
-  
   </body>
 </html>
