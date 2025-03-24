@@ -6,7 +6,7 @@ from .models import UserProfile
 
 @receiver(user_signed_up)
 def create_user_profile(sender, request, user, **kwargs):
-    UserProfile.objects.create(user=user)
+    User.objects.create(user=user)
 
 
 
