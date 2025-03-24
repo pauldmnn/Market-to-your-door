@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .forms import UserProfileForm
 from django.contrib.auth.decorators import login_required
+from allauth.account.views import ConfirmEmailView
 
 
 @login_required
@@ -27,3 +28,10 @@ def edit_profile(request):
     else:
         form = UserProfileForm(instance=profile)
     return render(request, 'profiles/edit_profile.html', {'form': form})
+
+
+
+class CustomConfirmEmailView(ConfirmEmailView):
+    def get(self, *args, **kwargs):
+        response = super().get(*args, **kwargs)
+        return redirect('/?login=1')

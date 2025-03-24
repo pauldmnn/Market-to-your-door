@@ -45,6 +45,10 @@ header {
     margin-top: 150px;
 }
 
+.container {
+    margin-top: 70px;
+}
+
 .product-detail-img {
     width: 380px; 
     height: auto; 

@@ -74,7 +74,7 @@
                   <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
                 </li>
                 <li class="nav-item">
-                  <a href="{% url 'create_profile' %}" class="nav-link">Register</a>
+                  <a href="{% url 'account_signup' %}" class="nav-link">Register</a>
                 </li>
               {% endif %}
               <li class="list-inline-item">
@@ -164,5 +164,13 @@
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
             crossorigin="anonymous">
     </script>
+    {% if request.GET.login == '1' %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const loginModal = new bootstrap.Modal(document.getElementById("loginModal"));
+            loginModal.show();
+        });
+    </script>
+    {% endif %}
   </body>
 </html>
