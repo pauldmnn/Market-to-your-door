@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import checkout, payment, payment_success, payment_cancel, order_summary, order_success, stripe_webhook
+from . import views
 
 urlpatterns = [
     path("checkout/", checkout, name="checkout"),

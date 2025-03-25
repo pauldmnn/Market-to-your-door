@@ -11,8 +11,20 @@ def cart_contents(request):
     """
     if request.user.is_authenticated:
         cart_items = Cart.objects.filter(user=request.user)
+        # Sum up the quantity for all items
+        cart_count = sum(item.quantity for item in cart_items)
+        cart_total = sum(item.product.price * Decimal(item.quantity) for item in cart_items)
     else:
-        cart_items = []
+        # For guest users, cart is stored in session as a dict: { product_id: quantity }
+        session_cart = request.session.get('cart', {})
+        cart_count = sum(session_cart.values())  
+        cart_total = Decimal("0.00")
+        for product_id, quantity in session_cart.items():
+            try:
+                product = Product.objects.get(id=product_id)
+                cart_total += product.price * Decimal(quantity)
+            except Product.DoesNotExist:
+                continue
 
     total = Decimal("0.00")
     cart_count = 0
