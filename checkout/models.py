@@ -9,6 +9,11 @@ from django_countries.fields import CountryField
 
 
 class Order(models.Model):
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, 
+        null=True, blank=True  
+    )
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('paid', 'Paid'),
@@ -27,6 +32,9 @@ class Order(models.Model):
     delivery_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     payment_id = models.CharField(max_length=255, blank=True, null=True)
     shipping_address = models.OneToOneField("ShippingAddress", on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f"Order {self.id}"
 
     def calculate_total(self):
         """
@@ -73,8 +81,9 @@ class OrderItem(models.Model):
 
 
 class ShippingAddress(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=255)
+    email = models.EmailField(max_length=255, null=True, blank=True)
     address_line1 = models.CharField(max_length=255, null=True, blank=True)
     address_line2 = models.CharField(max_length=255, null=True, blank=True)
     postal_code = models.CharField(max_length=20)

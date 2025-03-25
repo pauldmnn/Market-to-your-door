@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="text-center">{% trans "Sign Up" %}</h2>
+    <h2 class="text-center">{% trans "Register" %}</h2>
     <div class="row justify-content-center">
         <div class="col-md-6">
             {% if form.errors %}
@@ -26,11 +26,11 @@
                 {% if redirect_field_value %}
                     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
                 {% endif %}
-                <button type="submit" class="btn btn-primary w-100 mt-3">{% trans "Sign Up" %}</button>
+                <button type="submit" class="btn btn-success w-100 mt-3">{% trans "Register" %}</button>
             </form>
 
             <p class="mt-3 text-center">
-                {% blocktrans %}Already have an account? <a href="{{ login_url }}">Sign in</a>.{% endblocktrans %}
+                {% blocktrans %}Already have an account? <a href="{{ login_url }}">Log in</a>.{% endblocktrans %}
             </p>
         </div>
     </div>

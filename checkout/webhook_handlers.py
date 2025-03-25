@@ -4,11 +4,32 @@ from checkout.models import Order, ShippingAddress, OrderItem
 from products.models import Product
 from django.contrib.auth.models import User
 from django.http import HttpResponse
+from django.template.loader import render_to_string
+from django.conf import settings
 
 
 class StripeWebhookHandler:
     def __init__(self, request):
         self.request = request
+
+    def _send_confirmation_email(self, order):
+        """
+        Send the user confirmation email
+        """
+        cust_email = order.email
+        subject = render_to_string(
+            'checkout/confirmation_emails/confirmation_email_subject.txt',
+            {'order': order})
+        body = render_to_string(
+            'checkout/confirmation_emails/confirmation_email_body.txt',
+            {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL})
+        
+        send_mail(
+            subject,
+            body,
+            settings.DEFAULT_FROM_EMAIL,
+            [cust_email]
+        )
 
     def handle_event(self, event):
         """Handle unknown webhook events"""
@@ -19,7 +40,6 @@ class StripeWebhookHandler:
         metadata = intent.get("metadata", {})
         order_id = metadata.get("order_id")
 
-        # 🔹 Get billing details from the payment method
         billing_details = intent.get("charges", {}).get("data", [{}])[0].get("billing_details", {})
         shipping_details = intent.get("shipping", {})
 
@@ -28,12 +48,10 @@ class StripeWebhookHandler:
             order.status = "paid"
             order.payment_id = intent.id
 
-            # 🔹 Optionally update billing info on order
             order.billing_name = billing_details.get("name")
             order.billing_email = billing_details.get("email")
             order.save()
 
-            # 🔹 Optionally update shipping address if not stored earlier
             address = order.shipping_address
             if not address:
                 address = ShippingAddress.objects.create(

@@ -33,6 +33,7 @@ def checkout(request):
     if request.method == "POST":
         form = ShippingAddressForm(request.POST)
         if form.is_valid():
+            user = request.user if request.user.is_authenticated else None
             # Save shipping address
             shipping_address = form.save(commit=False)
             shipping_address.user = request.user

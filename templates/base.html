@@ -71,7 +71,7 @@
               {% else %}
                 <li class="nav-item">
                   <!-- Trigger modal for login -->
-                  <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
+                  <a class="nav-link" href="{% url 'account_login' %}">Login</a>
                 </li>
                 <li class="nav-item">
                   <a href="{% url 'account_signup' %}" class="nav-link">Register</a>
@@ -100,40 +100,13 @@
         <p class="mb-0">{{ free_delivery_message }}</p>
       </div>
     </header>
-    <!-- Login modal -->
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content p-4">
-          <div class="modal-header">
-            <h5 class="modal-title">Login</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <form method="POST" action="{% url 'account_login' %}">
-            {% csrf_token %}
-            <div class="modal-body">
-              <div class="mb-3">
-                <label for="login_email" class="form-label">Email</label>
-                <input type="email" name="login" class="form-control" id="login_email" required>
-              </div>
-              <div class="mb-3">
-                <label for="login_password" class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" id="login_password" required>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-primary">Login</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
+    
         <!-- Logout Confirmation Modal -->
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content p-4">
+        <div class="modal-content  text-bg-success text-center p-4">
           <div class="modal-header">
-            <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+            <h5 class="modal-title text-center" id="logoutModalLabel">Confirm Logout</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -142,9 +115,9 @@
           <div class="modal-footer d-flex justify-content-between">
             <form id="logout-form" method="POST" action="{% url 'account_logout' %}">
               {% csrf_token %}
-              <button type="submit" class="btn btn-danger">Yes, Log me out</button>
+              <button type="submit" class="btn btn-dark">Yes, Log me out</button>
             </form>
-            <button type="button" class="btn btn-primaty" data-bs-dismiss="modal">No, Continue Shopping</button>
+            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">No, Continue Shopping</button>
           </div>
         </div>
       </div>
@@ -164,13 +137,6 @@
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
             crossorigin="anonymous">
     </script>
-    {% if request.GET.login == '1' %}
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const loginModal = new bootstrap.Modal(document.getElementById("loginModal"));
-            loginModal.show();
-        });
-    </script>
-    {% endif %}
+    
   </body>
 </html>

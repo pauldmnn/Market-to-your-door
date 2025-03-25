@@ -12,6 +12,7 @@ def __init__(self, *args, **kwargs):
     self.helper.layout = Layout(
         Row(
             Column('full_name', css_class='form-group col-md-6 mb-0'),
+            Column('email', css_class='form-group col-md-6 mb-0'),
             css_class='form-row'
         ),
         Row(
@@ -41,6 +42,7 @@ class ShippingAddressForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["full_name"].widget.attrs.update({"class": "form-control", "id": "full_name", "placeholder": "Full Name"})
+        self.fields["email"].widget.attrs.update({"class": "form-control", "id": "email", "placeholder": "Email"})
         self.fields["address_line1"].widget.attrs.update({"class": "form-control", "id": "address_line1", "placeholder": "Address Line 1"})
         self.fields["address_line2"].widget.attrs.update({"class": "form-control", "id": "address_line2", "placeholder": "Address Line 2"})
         self.fields["city"].widget.attrs.update({"class": "form-control", "id": "city", "placeholder": "City"})
