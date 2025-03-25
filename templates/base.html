@@ -43,7 +43,7 @@
             <input type="search" class="form-control search-input" placeholder="Search for a product" aria-label="Search" name="q" value="{{ query }}">
           </form>
           <div class="collapse navbar-collapse" id="navbarContent">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto  fs-5 fw-semibold d-flex align-items-center">
               <!-- Dropdown for Market Categories -->
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="marketDropdown" role="button" 
@@ -57,7 +57,7 @@
                   <li><a class="dropdown-item" href="{% url 'product_list' %}">All Products</a></li>
                 </ul>
               </li>
-              <li class="nav-item">
+              <li class="nav-item ">
                 <a class="nav-link" href="{% url 'product_list' %}">Products</a>
               </li>
               
