@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block title %}Add Category{% endblock title %}
+
+{% block content %}
+<div class="container my-6">
+  <h2 class="mb-4 text-center">Add Category</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+  </form>
+</div>
+{% endblock content %}

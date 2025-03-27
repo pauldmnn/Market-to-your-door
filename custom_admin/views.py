@@ -23,7 +23,7 @@ class OrderUpdateView(UpdateView):
     model = Order
     form_class = OrderUpdateForm
     template_name = 'custom_admin/order_update.html'
-    success_url = reverse_lazy('custom_admin:dashboard_home')
+    success_url = reverse_lazy('dashboard_home')
 
     def form_valid(self, form):
         messages.success(self.request, "Order updated successfully.")
@@ -34,7 +34,7 @@ class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
     template_name = 'custom_admin/product_form.html'
-    success_url = reverse_lazy('custom_admin:dashboard_home')
+    success_url = reverse_lazy('dashboard_home')
 
     def form_valid(self, form):
         messages.success(self.request, "Product added successfully.")
@@ -45,7 +45,7 @@ class CategoryCreateView(CreateView):
     model = Category
     form_class = CategoryForm
     template_name = 'custom_admin/category_form.html'
-    success_url = reverse_lazy('custom_admin:dashboard_home')
+    success_url = reverse_lazy('dashboard_home')
 
     def form_valid(self, form):
         messages.success(self.request, "Category added successfully.")
@@ -68,6 +68,6 @@ def manage_admins(request):
         elif action == "remove":
             admin_group.user_set.remove(user)
             messages.success(request, f"{user.username} has been removed from custom admin.")
-        return redirect("custom_admin:manage_admins")
+        return redirect("manage_admins")
     return render(request, "custom_admin/manage_admins.html", {"users": users, "admin_group": admin_group})
 

@@ -77,6 +77,11 @@
                   <a href="{% url 'account_signup' %}" class="nav-link">Register</a>
                 </li>
               {% endif %}
+              {% if user.is_authenticated and user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_home' %}">Admin Panel</a>
+                </li>
+              {% endif %}
               <li class="list-inline-item">
                 <a class="{% if grand_total %} text-info font-weight-bold {% else %} text-black {% endif %} nav-link" href="{% url 'cart_detail' %}">
                   <div class="text-center">

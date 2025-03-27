@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Admin Dashboard{% endblock title %}
+
+{% block content %}
+<div class="container my-6">
+  <h1 class="text-center mb-4">Admin Dashboard</h1>
+  <div class="mb-4 text-center">
+    <a href="{% url 'product_create' %}" class="btn btn-success me-2">Add Product</a>
+    <a href="{% url 'category_create' %}" class="btn btn-info me-2">Add Category</a>
+    <a href="{% url 'manage_admins' %}" class="btn btn-warning">Manage Admins</a>
+  </div>
+  <h3>Orders</h3>
+  {% if orders %}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Order Number</th>
+          <th>User</th>
+          <th>Total Price</th>
+          <th>Status</th>
+          <th>Updated</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+          <tr>
+            <td>{{ order.order_number }}</td>
+            <td>{{ order.user.username|default:"Guest" }}</td>
+            <td>£{{ order.total_price|floatformat:2 }}</td>
+            <td>{{ order.status }}</td>
+            <td>{{ order.updated_at|date:"M d, Y H:i" }}</td>
+            <td>
+              <a href="{% url 'order_update' order.id %}" class="btn btn-sm btn-primary">Edit</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No orders found.</p>
+  {% endif %}
+</div>
+{% endblock content %}

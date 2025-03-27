@@ -5,6 +5,7 @@ from crispy_forms.layout import Layout, Field, Submit
 from checkout.models import Order 
 from products.models import Product, Category
 
+
 class OrderUpdateForm(forms.ModelForm):
     class Meta:
         model = Order
@@ -19,6 +20,7 @@ class OrderUpdateForm(forms.ModelForm):
             Field('payment_id'),
             Submit('submit', 'Update Order', css_class='btn btn-primary w-100')
         )
+
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -39,6 +41,7 @@ class ProductForm(forms.ModelForm):
             Field('slug'),
             Submit('submit', 'Save Product', css_class='btn btn-primary w-100')
         )
+
 
 class CategoryForm(forms.ModelForm):
     class Meta:
