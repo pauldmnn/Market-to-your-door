@@ -14,4 +14,6 @@ urlpatterns = [
     path("promote-user/<int:user_id>/", views.promote_to_admin, name="promote_user"),    
     path('product/edit/<int:pk>/', ProductUpdateView.as_view(), name='edit_product'),
     path('product/delete/<int:pk>/', ProductDeleteView.as_view(), name='delete_product'),
+    path('manage-users/promote/<int:user_id>/<str:role>/', views.promote_user, name='promote_user'),
+
 ]

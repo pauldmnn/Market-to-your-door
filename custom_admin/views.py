@@ -127,11 +127,7 @@ class CategoryCreateView(CreateView):
     def form_valid(self, form):
         messages.success(self.request, "Category added successfully.")
         return super().form_valid(form)
-
-
-def superuser_required(view_func):
-    return login_required(user_passes_test(lambda u: u.is_superuser)(view_func))
-
+    
 
 @superuser_required
 def manage_users(request):
@@ -170,3 +166,17 @@ def promote_to_admin(request, user_id):
     return redirect("manage_users")
 
 
+@superuser_required
+def promote_user(request, user_id, role):
+    user = get_object_or_404(User, id=user_id)
+
+    if role == "admin":
+        admin_group, _ = Group.objects.get_or_create(name="custom_admin")
+        admin_group.user_set.add(user)
+        messages.success(request, f"{user.username} promoted to admin.")
+    elif role == "superuser":
+        user.is_superuser = True
+        user.save()
+        messages.success(request, f"{user.username} promoted to superuser.")
+
+    return redirect("manage_users")

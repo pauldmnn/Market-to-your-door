@@ -23,17 +23,18 @@ def create_profile(request):
 
 @login_required
 def edit_profile(request):
-    profile = request.user.profile
+    profile = get_object_or_404(UserProfile, user=request.user)
+
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        form = UserProfileForm(request.POST, instance=profile, user=request.user)
         if form.is_valid():
             form.save()
-            return redirect('profile_detail')
+            messages.success(request, "Profile updated successfully.")
+            return redirect('my_account')
     else:
-        form = UserProfileForm(instance=profile)
+        form = UserProfileForm(instance=profile, user=request.user)
+
     return render(request, 'profiles/edit_profile.html', {'form': form})
-
-
 
 
 @login_required
