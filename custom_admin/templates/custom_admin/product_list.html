@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="container my-6">
+    <h2>All Products</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Inventory</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+        <tr>
+          <td>{{ product.name }}</td>
+          <td>£{{ product.price }}</td>
+          <td>{{ product.inventory }}</td>
+          <td>
+            <a href="{% url 'edit_product' product.pk %}" class="btn btn-warning btn-sm">Edit</a>
+            <a href="{% url 'delete_product' product.pk %}" class="btn btn-danger btn-sm">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
