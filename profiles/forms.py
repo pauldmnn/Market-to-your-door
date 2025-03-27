@@ -3,7 +3,7 @@ from .models import UserProfile
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit
 from allauth.account.forms import LoginForm
-
+from allauth.account.forms import SignupForm
 
 
 class UserProfileForm(forms.ModelForm):
@@ -29,3 +29,5 @@ class CustomLoginForm(LoginForm):
         super().__init__(*args, **kwargs)
         # Override the 'login' field's label so that it displays as "Email"
         self.fields['login'].label = "Email"
+
+

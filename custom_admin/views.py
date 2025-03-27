@@ -3,12 +3,12 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import User, Group
-from custom_admin.decorators import custom_admin_required
+from custom_admin.decorators import custom_admin_required, superuser_required
 from django.utils.decorators import method_decorator
-from custom_admin.decorators import superuser_required
 from checkout.models import Order, OrderItem
 from products.models import Product, Category
 from .forms import OrderUpdateForm, ProductForm, CategoryForm
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 
 @custom_admin_required
@@ -73,19 +73,15 @@ class ProductCreateView(CreateView):
         return super().form_valid(form)
     
 
-@method_decorator(custom_admin_required, name='dispatch')
 class ProductListView(ListView):
     model = Product
-    template_name = 'custom_admin/product_list.html'
     context_object_name = 'products'
 
-
-@method_decorator(custom_admin_required, name='dispatch')
-class ProductUpdateView(UpdateView):
-    model = Product
-    form_class = ProductForm
-    template_name = 'custom_admin/product_form.html'
-    success_url = reverse_lazy('product_list')
+    def get_template_names(self):
+        user = self.request.user
+        if user.is_authenticated and (user.is_superuser or user.groups.filter(name="custom_admin").exists()):
+            return ['custom_admin/product_list_admin.html']
+        return ['products/products.html']
 
 
 @custom_admin_required
@@ -132,26 +128,45 @@ class CategoryCreateView(CreateView):
         messages.success(self.request, "Category added successfully.")
         return super().form_valid(form)
 
-@custom_admin_required
-def manage_admins(request):
-    """
-    View to allow the superuser to grant or revoke custom admin credentials.
-    """
-    admin_group, created = Group.objects.get_or_create(name="custom_admin")
-    users = User.objects.all()
-    if request.method == "POST":
-        user_id = request.POST.get("user_id")
-        action = request.POST.get("action")  
-        user = get_object_or_404(User, id=user_id)
-        if action == "add":
-            admin_group.user_set.add(user)
-            messages.success(request, f"{user.username} is now a custom admin.")
-        elif action == "remove":
-            admin_group.user_set.remove(user)
-            messages.success(request, f"{user.username} has been removed from custom admin.")
-        return redirect("manage_admins")
-    return render(request, "custom_admin/manage_admins.html", {"users": users, "admin_group": admin_group})
+
+def superuser_required(view_func):
+    return login_required(user_passes_test(lambda u: u.is_superuser)(view_func))
 
 
+@superuser_required
+def manage_users(request):
+    user_type = request.GET.get("type", "normal")
+    admin_group, _ = Group.objects.get_or_create(name="custom_admin")
+
+    if user_type == "admin":
+        users = User.objects.filter(groups=admin_group)
+    else:
+        users = User.objects.exclude(groups=admin_group)
+
+    context = {
+        "users": users,
+        "user_type": user_type,
+    }
+    return render(request, "custom_admin/manage_users.html", context)
+
+
+@superuser_required
+def delete_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if user.is_superuser:
+        messages.error(request, "Cannot delete a superuser.")
+    else:
+        user.delete()
+        messages.success(request, "User deleted successfully.")
+    return redirect("manage_users")
+
+
+@superuser_required
+def promote_to_admin(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    admin_group, _ = Group.objects.get_or_create(name="custom_admin")
+    admin_group.user_set.add(user)
+    messages.success(request, f"{user.username} promoted to admin.")
+    return redirect("manage_users")
 
 

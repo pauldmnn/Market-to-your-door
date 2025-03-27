@@ -97,6 +97,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'cart.contexts.cart_contents',
                 'cart.contexts.site_wide_messages',
+                'custom_admin.context_processors.is_admin_user',
             ],
         },
     },
