@@ -2,19 +2,19 @@
 {% load static %}
 
 {% block content %}
-<div class="market-banner my-6">
-    <img src="/media/market_image.jpg" alt="Market Banner">
-    <div class="banner-content">
-        <h1 class="display-4 logo-font text-white">
-            Welcome to your online market!
-        </h1>
+<div class="hero-section d-flex align-items-center justify-content-center text-white">
+    <div class="text-center">
+      <h1 class="display-4 fw-bold">Welcome to Market to Your Door</h1>
+      <p class="lead">Fresh produce delivered straight to your home.</p>
         <h4 class="my-5">
             <a href="{% url 'product_list' %}" class="shop-now-button btn btn-lg btn-success text-uppercase py-3 text-white" role="button">
             Shop now
             </a>
         </h4>
     </div>
-</div>    
+</div> 
+
+  
 
 {% endblock %}
 

@@ -17,8 +17,10 @@ class UserProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+        
         for field_name in self.fields:
             self.fields[field_name].widget.attrs['class'] = 'form-control'
+
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.layout = Layout(

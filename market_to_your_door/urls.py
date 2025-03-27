@@ -31,6 +31,8 @@ urlpatterns = [
     path('checkout/', include('checkout.urls')),
     path('profile/', include('profiles.urls')),
     path('admin-panel/', include('custom_admin.urls')),
+    path('newsletter/', include('newsletter.urls')),
+
 
 
 

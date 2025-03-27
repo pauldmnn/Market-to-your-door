@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'checkout',
     'profiles',
     'custom_admin',
+    'newsletter',
     
 
     # Third-Party Apps
