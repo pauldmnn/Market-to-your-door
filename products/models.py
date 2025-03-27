@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class Category(models.Model):
@@ -31,8 +32,40 @@ class Product(models.Model):
     inventory = models.PositiveIntegerField(default=0)
     price_unit = models.CharField(max_length=10, choices=UNIT_CHOICES, default='piece')
 
+    @property
+    def average_rating(self):
+        reviews = self.reviews.all()
+        if reviews:
+            return round(sum([r.rating for r in reviews]) / reviews.count(), 1)
+        return 0
+
+
     def is_in_stock(self):
         return self.inventory > 0
 
     def __str__(self):
         return f"{self.name} - {self.get_price_unit_display()}"
+
+
+class Review(models.Model):
+    RATING_CHOICES = [(i, str(i)) for i in range(1, 6)]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
+    rating = models.PositiveIntegerField(choices=RATING_CHOICES)
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'product') 
+
+    def __str__(self):
+        return f"Review by {self.user.username} for {self.product.name} ({self.rating}★)"

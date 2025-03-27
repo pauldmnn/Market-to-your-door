@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'profiles',
     'custom_admin',
     'newsletter',
+    'reviews',
     
 
     # Third-Party Apps

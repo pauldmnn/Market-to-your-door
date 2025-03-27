@@ -35,10 +35,25 @@
             <span>{{ product.get_price_unit_display }}</span>
             <button type="submit" class="btn btn-success">Add to Cart</button>
           </form>
-          <p>Avalilable Stock:{{ product.inventory }} </p>
+          <p>Available Stock:{{ product.inventory }} </p>
         {% else %}
           <p class="text-danger"><strong>Out of Stock</strong></p>
         {% endif %}
+        <h4>Customer Reviews</h4>
+        {% if product.reviews.all %}
+            <p>Average Rating: {{ product.average_rating }}★</p>
+            {% for review in product.reviews.all %}
+                <div class="mb-3">
+                    <strong>{{ review.user.get_full_name|default:review.user.username }}</strong> —
+                    {{ review.rating }}★
+                    <p>{{ review.comment }}</p>
+                    <small class="text-muted">{{ review.created_at|date:"F j, Y" }}</small>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No reviews yet.</p>
+        {% endif %}
+        
       </div>
     </div>
   </div>
