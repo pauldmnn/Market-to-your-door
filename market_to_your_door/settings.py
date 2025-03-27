@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'cart',
     'checkout',
     'profiles',
+    'custom_admin',
     
 
     # Third-Party Apps

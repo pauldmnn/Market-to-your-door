@@ -30,6 +30,8 @@ urlpatterns = [
     path('cart/', include('cart.urls')),
     path("checkout/", include("checkout.urls")),
     path('profile/', include('profiles.urls')),
+    path('admin-panel/', include('custom_admin.urls', namespace='custom_admin')),
+
 
 
 
