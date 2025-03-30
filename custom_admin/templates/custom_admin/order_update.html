@@ -6,6 +6,29 @@
 
 {% block content %}
 <div class="container my-6">
+  
+  <h2><strong>Order Details:</strong></h2>
+  <p>Order #{{ order.order_number}}</p>
+  <ul>
+    {% for item in order.items.all %}
+        <li>{{ item.product.name }} - {{ item.quantity }}</li>
+    {% endfor %}
+</ul>
+
+  <h2><strong>Shipping Info:</strong></h2>
+  <p></p>
+    <ul>
+      <li>{{ order.shipping_address.full_name }}</li>
+      <li>{{ order.shipping_address.address_line1 }}</li>
+      {% if order.shipping_address.address_line2 %}
+        <li>{{ order.shipping_address.address_line2 }}</li>
+      {% endif %}
+      <li>{{ order.shipping_address.city }}</li>
+      <li>{{ order.shipping_address.postal_code }}</li>
+      <li>{{ order.shipping_address.country }} </li>
+    </ul> 
+  </p>
+  
   <h2 class="mb-4 text-center">Update Order {{ object.order_number }}</h2>
   <form method="post">
     {% csrf_token %}

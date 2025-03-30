@@ -9,6 +9,9 @@ from checkout.models import Order, OrderItem
 from products.models import Product, Category
 from reviews.models import Review, ReviewReply
 from custom_admin.decorators import custom_admin_required
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
 
 
 from .forms import OrderUpdateForm, ProductForm, CategoryForm
@@ -205,6 +208,29 @@ def reply_to_review(request, review_id):
 
     return render(request, 'custom_admin/reply_form.html', {'review': review})
 
+
+@custom_admin_required
+def mark_order_shipped(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+
+    if order.status == "Paid":
+        messages.warning(request, "Order already marked as Paid. Cannot mark as Shipped again.")
+        return redirect("dashboard_home")
+
+    # Update order status
+    order.status = "Paid/Shipped"
+    order.save()
+
+    # Send email to customer
+    subject = f"Your Order #{order.order_number} has been shipped"
+    message = render_to_string("emails/order_shipped_email.txt", {
+        "order": order,
+        "shipping_address": order.shipping_address,
+    })
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [order.user.email])
+
+    messages.success(request, f"Order {order.order_number} marked as shipped and email sent.")
+    return redirect("dashboard_home")
 
 
 
