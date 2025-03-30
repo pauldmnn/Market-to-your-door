@@ -141,23 +141,29 @@
   {% block content %}{% endblock %}
 
 
-  <footer class=" fixed-bottom">
-    <div class="row bg-dark text-light text-center">
-      <div class="col-md-4">
-        <ul>
-          <li><a href="{% url 'about_us' %}" class="text-decoration-none">About</a></li>
-          <li><a href="{% url 'contact_us' %} " class="text-decoration-none">Contact Us</a></li>
-          <li><a href="{% url 'subscribe_newsletter' %}" class="btn btn-danger">
-              Subscribe to Newsletter
-            </a></li>
-        </ul>
-        <div class="text-center col-md-12 p-3 ">
-          © {{ now|date:"Y" }} Market to Your Door. All rights reserved.
-        </div>
-
+  <footer class="footer">
+    <div class="footer-container">
+      <!-- Left -->
+      <div class="footer-left">
+        <a href="{% url 'about_us' %}">About Us</a>
+        <a href="{% url 'contact_us' %}">Contact Us</a>
       </div>
-
+  
+      <!-- Center -->
+      <div class="footer-center">
+        <a href="{% url 'subscribe_newsletter' %}" class="subscribe-btn">Subscribe</a>
+      </div>
+  
+      <!-- Right -->
+      <div class="footer-right">
+        <a href="https://www.facebook.com/YourPage" target="_blank">
+          <i class="fab fa-facebook"></i> Facebook
+        </a>
+      </div>
+    </div>
   </footer>
+  
+  
   {% block postloadjs %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
