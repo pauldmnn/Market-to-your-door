@@ -48,6 +48,11 @@ class Product(models.Model):
                 num += 1
             self.slug = slug
         super().save(*args, **kwargs)
+    
+    def save(self, *args, **kwargs):
+        if self.inventory < 0:
+            raise ValueError("Inventory cannot be negative")
+        super().save(*args, **kwargs)
 
     @property
     def average_rating(self):
@@ -55,7 +60,6 @@ class Product(models.Model):
         if reviews:
             return round(sum([r.rating for r in reviews]) / reviews.count(), 1)
         return 0
-
 
     def is_in_stock(self):
         return self.inventory > 0

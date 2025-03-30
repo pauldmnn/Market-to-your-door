@@ -81,6 +81,7 @@ def checkout(request):
                         product=cart_item.product,
                         quantity=cart_item.quantity
                     )
+
                 # Clear cart for logged-in user
                 Cart.objects.filter(user=user).delete()
             else:
@@ -89,9 +90,13 @@ def checkout(request):
                         order=order,
                         product=item["product"],
                         quantity=item["quantity"]
+                        
                     )
+
                 # Clear session cart
                 request.session["cart"] = {}
+                print(f"Reducing {product.name} stock by {quantity}. New stock: {product.inventory}")
+
             send_order_confirmation_email(order)
 
             # Create a Stripe PaymentIntent (amount in cents)
