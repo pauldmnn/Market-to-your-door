@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'custom_admin',
     'newsletter',
     'reviews',
+    'contact',
     
 
     # Third-Party Apps

@@ -20,8 +20,6 @@ urlpatterns = [
     path('manage-users/promote/<int:user_id>/<str:role>/', views.promote_user, name='promote_user'),
     path('reviews/', views.review_list, name='review_list'),
     path('reviews/<int:review_id>/reply/', views.reply_to_review, name='reply_to_review'),
-    path("orders/<int:order_id>/ship/", views.mark_order_shipped, name="mark_order_shipped"),
-
-
+    path('customer-questions/', views.customer_questions, name='customer_questions'),
 
 ]

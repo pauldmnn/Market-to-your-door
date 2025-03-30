@@ -83,6 +83,7 @@
             <li class="nav-item">
               <a class="nav-link" href="{% url 'dashboard_home' %}">Admin Panel</a>
             </li>
+            
             {% endif %}
             <li class="list-inline-item">
               <a class="{% if grand_total %} text-info font-weight-bold {% else %} text-black {% endif %} nav-link"
@@ -145,8 +146,8 @@
       <div class="col-md-4">
         <ul>
           <li><a href="#" class="text-decoration-none">About</a></li>
-          <li><a href="#" class="text-decoration-none">Contact</a></li>
-          <li><a href="{% url 'subscribe_newsletter' %}" class="btn btn-light">
+          <li><a href="{% url 'contact_us' %} " class="text-decoration-none">Contact Us</a></li>
+          <li><a href="{% url 'subscribe_newsletter' %}" class="btn btn-danger">
               Subscribe to Newsletter
             </a></li>
         </ul>
