@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'newsletter',
     'reviews',
     'contact',
+    'about',
     
 
     # Third-Party Apps

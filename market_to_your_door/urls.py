@@ -34,5 +34,6 @@ urlpatterns = [
     path('newsletter/', include('newsletter.urls')),
     path('reviews/', include('reviews.urls')),
     path('contact/', include('contact.urls')),
+    path('', include('about.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
