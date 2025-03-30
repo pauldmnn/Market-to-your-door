@@ -92,7 +92,7 @@ def checkout(request):
                     )
                 # Clear session cart
                 request.session["cart"] = {}
-                send_order_confirmation_email(order)
+            send_order_confirmation_email(order)
 
             # Create a Stripe PaymentIntent (amount in cents)
             payment_intent = stripe.PaymentIntent.create(

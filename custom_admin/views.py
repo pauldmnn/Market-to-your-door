@@ -64,7 +64,7 @@ class ProductCreateView(CreateView):
         messages.success(self.request, "Product added successfully.")
         return super().form_valid(form)
     
-
+@custom_admin_required
 class ProductListView(ListView):
     model = Product
     context_object_name = 'products'

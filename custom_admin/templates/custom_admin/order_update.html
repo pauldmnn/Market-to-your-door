@@ -8,7 +8,7 @@
 <div class="container my-6">
   
   <h2><strong>Order Details:</strong></h2>
-  <p>Order #{{ order.order_number}}</p>
+  <p>Order number:{{ order.order_number}}</p>
   <ul>
     {% for item in order.items.all %}
         <li>{{ item.product.name }} - {{ item.quantity }}</li>

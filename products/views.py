@@ -8,36 +8,50 @@ from reviews.forms import ReviewForm
 
 def product_list(request):
     """
-    A view to display all products including searching, sorting and filtering
+    A view to display all products including searching, sorting, and filtering
     """
     products = Product.objects.all()
 
+    # Get filter values from GET request
     query = request.GET.get('q', '')
     name_filter = request.GET.get('name', '')
     category_filter = request.GET.get('category', '')
     min_price = request.GET.get('min_price', '')
     max_price = request.GET.get('max_price', '')
     sort_option = request.GET.get('sort', 'name')
-    if query:
-        products = Product.objects.filter(name__icontains=query)
-        name_filter = query
-    else:
-        if name_filter:
-            products = products.filter(name__icontains=name_filter)
-        if category_filter:
-            products = products.filter(category__slug=category_filter)
-        if min_price:
-            products = products.filter(price__gte=min_price)
-        if max_price:
-            products = products.filter(price__lte=max_price)
 
+    # Apply search query
+    if query:
+        products = products.filter(name__icontains=query)
+        name_filter = query
+    elif name_filter:
+        products = products.filter(name__icontains=name_filter)
+
+    # Filter by category slug
+    if category_filter:
+        products = products.filter(category__slug=category_filter)
+
+    # Filter by price range
+    if min_price:
+        try:
+            products = products.filter(price__gte=float(min_price))
+        except ValueError:
+            pass  # ignore invalid inputs
+    if max_price:
+        try:
+            products = products.filter(price__lte=float(max_price))
+        except ValueError:
+            pass
+
+    # Apply sorting
     if sort_option in ['name', '-name', 'price', '-price']:
         products = products.order_by(sort_option)
     elif sort_option == 'category':
         products = products.order_by('category__name')
     elif sort_option == '-category':
         products = products.order_by('-category__name')
-       
+
+    # Pass all necessary context to the template
     context = {
         'products': products,
         'name_filter': name_filter,

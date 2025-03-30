@@ -5,7 +5,7 @@ from .views import ProductUpdateView, ProductDeleteView, ProductListView, Catego
 
 urlpatterns = [
     path('', views.dashboard_home, name='dashboard_home'),
-    path('products/', ProductListView.as_view(), name='product_list'),
+    path('products/', ProductListView.as_view(), name='product_list_admin'),
     path('order/<int:pk>/update/', views.OrderUpdateView.as_view(), name='order_update'),
     path('products/add/', views.ProductCreateView.as_view(), name='product_create'),
     path('categories/add/', views.CategoryCreateView.as_view(), name='category_create'),

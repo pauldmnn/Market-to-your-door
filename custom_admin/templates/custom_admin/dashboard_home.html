@@ -6,46 +6,57 @@
 {% block content %}
 <div class="container my-6">
   <h1 class="text-center mb-4">Admin Dashboard</h1>
-  <div class="mb-4 text-center">
-    <a href="{% url 'product_create' %}" class="btn btn-dark me-2">Add Product</a>
-    <a href="{% url 'category_create' %}" class="btn btn-dark me-2">Add/View Categories</a>
-    <a href="{% url 'review_list' %}" class="btn btn-dark me-2">
-        <i class="fas fa-star"></i> View Reviews
-    </a>    {% if request.user.is_superuser %}
-    <a href="{% url 'manage_users' %}" class="btn btn-dark">Manage Users</a>
-    {% endif %}
-  </div>
 
-  <h3>Orders</h3>
-  {% if orders %}
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Order Number</th>
-          <th>User</th>
-          <th>Total Price</th>
-          <th>Status</th>
-          <th>Updated</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for order in orders %}
-          <tr>
-            <td>{{ order.order_number }}</td>
-            <td>{{ order.user.username|default:"Guest" }}</td>
-            <td>£{{ order.total_price|floatformat:2 }}</td>
-            <td>{{ order.status }}</td>
-            <td>{{ order.updated_at|date:"M d, Y H:i" }}</td>
-            <td>
-              <a href="{% url 'order_update' order.id %}" class="btn btn-sm btn-primary">Edit</a>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>No orders found.</p>
-  {% endif %}
+  <div class="row">
+    <!-- Sidebar buttons -->
+    <div class="col-md-3 mb-4">
+      <div class="d-grid gap-2">
+        <a href="{% url 'product_create' %}" class="btn btn-dark">Add Product</a>
+        <a href="{% url 'product_list_admin' %}" class="btn btn-dark">Update Product</a>
+        <a href="{% url 'category_create' %}" class="btn btn-dark">Add/View Categories</a>
+        <a href="{% url 'review_list' %}" class="btn btn-dark">
+          <i class="fas fa-star"></i> View Reviews
+        </a>
+        {% if request.user.is_superuser %}
+          <a href="{% url 'manage_users' %}" class="btn btn-dark">Manage Users</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Main content area -->
+    <div class="col-md-9">
+      <h3>Orders</h3>
+      {% if orders %}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Order Number</th>
+              <th>User</th>
+              <th>Total Price</th>
+              <th>Status</th>
+              <th>Updated</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in orders %}
+              <tr>
+                <td>{{ order.order_number }}</td>
+                <td>{{ order.user.username|default:"Guest" }}</td>
+                <td>£{{ order.total_price|floatformat:2 }}</td>
+                <td>{{ order.status }}</td>
+                <td>{{ order.updated_at|date:"M d, Y H:i" }}</td>
+                <td>
+                  <a href="{% url 'order_update' order.id %}" class="btn btn-sm btn-primary">Edit</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No orders found.</p>
+      {% endif %}
+    </div>
+  </div>
 </div>
 {% endblock content %}
