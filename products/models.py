@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils.text import slugify
 
 
 class Category(models.Model):
@@ -31,6 +32,17 @@ class Product(models.Model):
     updated = models.DateTimeField(auto_now=True)
     inventory = models.PositiveIntegerField(default=0)
     price_unit = models.CharField(max_length=10, choices=UNIT_CHOICES, default='piece')
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            num = 1
+            while Product.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{num}"
+                num += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
     @property
     def average_rating(self):

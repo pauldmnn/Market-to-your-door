@@ -25,6 +25,9 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['name', 'description', 'price', 'inventory', 'category', 'image', 'slug']
+        widgets = {
+            'slug': forms.TextInput(attrs={'readonly': True}) 
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
