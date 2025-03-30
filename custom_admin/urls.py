@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import ProductUpdateView, ProductDeleteView, ProductListView
+from .views import ProductUpdateView, ProductDeleteView, ProductListView, CategoryCreateView
 
 
 urlpatterns = [
@@ -9,6 +9,9 @@ urlpatterns = [
     path('order/<int:pk>/update/', views.OrderUpdateView.as_view(), name='order_update'),
     path('products/add/', views.ProductCreateView.as_view(), name='product_create'),
     path('categories/add/', views.CategoryCreateView.as_view(), name='category_create'),
+    path('add-category/', CategoryCreateView.as_view(), name='add_category'),
+    path('categories/edit/<slug:slug>/', views.edit_category, name='edit_category'),
+    path('categories/delete/<slug:slug>/', views.delete_category, name='delete_category'),
     path("manage-users/", views.manage_users, name="manage_users"),
     path("delete-user/<int:user_id>/", views.delete_user, name="delete_user"),
     path("promote-user/<int:user_id>/", views.promote_to_admin, name="promote_user"),    

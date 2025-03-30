@@ -8,7 +8,7 @@
   <h1 class="text-center mb-4">Admin Dashboard</h1>
   <div class="mb-4 text-center">
     <a href="{% url 'product_create' %}" class="btn btn-dark me-2">Add Product</a>
-    <a href="{% url 'category_create' %}" class="btn btn-dark me-2">Add Category</a>
+    <a href="{% url 'category_create' %}" class="btn btn-dark me-2">Add/View Categories</a>
     <a href="{% url 'review_list' %}" class="btn btn-dark me-2">
         <i class="fas fa-star"></i> View Reviews
     </a>    {% if request.user.is_superuser %}

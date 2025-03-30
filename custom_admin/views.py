@@ -42,21 +42,6 @@ def add_product(request):
     return render(request, 'custom_admin/add_product.html', {'form': form})
 
 
-@superuser_required
-def add_category(request):
-    if request.method == 'POST':
-        form = CategoryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Category added successfully.")
-            return redirect('category_list')
-        else:
-            messages.error(request, "There was an error saving the category.")
-    else:
-        form = CategoryForm()
-    return render(request, 'custom_admin/add_category.html', {'form': form})
-
-
 @method_decorator(custom_admin_required, name='dispatch')
 class OrderUpdateView(UpdateView):
     model = Order
@@ -125,6 +110,23 @@ class ProductDeleteView(DeleteView):
     
 
 @method_decorator(custom_admin_required, name='dispatch')
+def add_category(request):
+    from products.models import Category
+    categories = Category.objects.all()
+    form = CategoryForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, "Category added successfully.")
+        return redirect('add_category')
+
+    return render(request, 'custom_admin/add_category.html', {
+        'form': form,
+        'categories': categories
+    })
+
+
+@custom_admin_required
 class CategoryCreateView(CreateView):
     model = Category
     form_class = CategoryForm
@@ -134,7 +136,51 @@ class CategoryCreateView(CreateView):
     def form_valid(self, form):
         messages.success(self.request, "Category added successfully.")
         return super().form_valid(form)
-    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        return context
+
+
+@custom_admin_required
+def edit_category(request, slug):
+    category = get_object_or_404(Category, slug=slug)
+
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Category updated successfully.")
+            return redirect('add_category')
+    else:
+        form = CategoryForm(instance=category)
+
+    return render(request, 'custom_admin/edit_category.html', {
+        'form': form,
+        'category': category
+    })
+
+
+@custom_admin_required
+def delete_category(request, slug):
+    category = get_object_or_404(Category, slug=slug)
+    products = category.products.all()  
+
+    if request.method == 'POST':
+        if products.exists():
+            messages.error(request, "Cannot delete category with existing products.")
+        else:
+            category.delete()
+            messages.success(request, "Category deleted successfully.")
+        return redirect('add_category')
+
+    return render(request, 'custom_admin/confirm_delete_category.html', {
+        'category': category,
+        'products_exist': products.exists()
+    })
+
+
 
 @superuser_required
 def manage_users(request):

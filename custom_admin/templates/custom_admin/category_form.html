@@ -5,8 +5,32 @@
 {% block title %}Add Category{% endblock title %}
 
 {% block content %}
-
     <div class="container my-6">
+        <h4 class="mt-4">Existing Categories</h4>
+        <table class="table table-bordered mt-3">
+            <thead>
+              <tr>
+                <th><strong>Category Name</strong></th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for category in categories %}
+                <tr>
+                  <td><strong>{{ category.name }}</strong></td>
+                  <td class="text-end">
+                    <a href="{% url 'edit_category' category.slug %}" class="btn btn-md btn-warning me-2">Edit</a>
+                    <a href="{% url 'delete_category' category.slug %}" class="btn btn-smd btn-danger">Delete</a>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="2" class="text-center">No categories found.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
         <h2>Add Category</h2>
         <form method="POST">
         {% csrf_token %}

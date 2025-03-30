@@ -2,12 +2,24 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container my-6">
-  <h2>Add Category</h2>
-  <form method="POST">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <button type="submit" class="btn btn-primary">Save Category</button>
-  </form>
-</div>
+  <div class="review-container my-6">
+    <h4 class="mt-4">Existing Categories</h4>
+    <ul>
+      {% for category in categories %}
+        <li>
+          {{ category.name }} ({{ category.slug }})
+          <a href="{% url 'edit_category' category.slug %}" class="btn btn-sm btn-warning">Edit</a>
+          <a href="{% url 'delete_category' category.slug %}" class="btn btn-sm btn-danger">Delete</a>
+        </li>
+      {% empty %}
+        <li>No categories found.</li>
+      {% endfor %}
+    </ul>
+    <h2>Add Category</h2>
+    <form method="POST">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <button type="submit" class="btn btn-primary">Save Category</button>
+    </form>
+  </div>
 {% endblock %}
