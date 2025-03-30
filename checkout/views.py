@@ -7,6 +7,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.conf import settings
 from cart.models import Cart
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from products.models import Product
 from .models import Order, OrderItem, ShippingAddress
 from .forms import ShippingAddressForm
@@ -90,6 +92,7 @@ def checkout(request):
                     )
                 # Clear session cart
                 request.session["cart"] = {}
+                send_order_confirmation_email(order)
 
             # Create a Stripe PaymentIntent (amount in cents)
             payment_intent = stripe.PaymentIntent.create(
@@ -117,6 +120,33 @@ def checkout(request):
         "grand_total": round(float(grand_total), 2),
         "stripe_public_key": settings.STRIPE_PUBLIC_KEY,
     })
+
+
+def send_order_confirmation_email(order):
+    full_name = order.shipping_address.full_name
+    order_items = OrderItem.objects.filter(order=order)
+
+    subject = render_to_string(
+        'checkout/confirmation_emails/confirmation_email_subject.txt',
+    ).strip()
+
+    body = render_to_string(
+        'checkout/confirmation_emails/confirmation_email_body.txt',
+        {
+            'order': order,
+            'full_name': full_name,
+            'order_items': order_items,
+        }
+    )
+
+    send_mail(
+        subject,
+        body,
+        settings.DEFAULT_FROM_EMAIL,
+        [order.shipping_address.email],
+        fail_silently=False,
+    )
+
 
 
 def order_summary(request, order_id):
