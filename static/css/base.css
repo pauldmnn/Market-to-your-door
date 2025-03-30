@@ -49,6 +49,11 @@ header {
     text-align: left;
     color: aqua;
 }
+
+.review-container {
+    margin-top: 150px;
+}
+
 .checkout-container {
     margin-top: 150px;
 }

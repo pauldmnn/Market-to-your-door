@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
 from products.models import Product, Category
+from reviews.models import Review
+from reviews.forms import ReviewForm
 
 
 def product_list(request):
@@ -51,15 +53,23 @@ def product_list(request):
 
 
 def product_detail(request, slug):
-    """
-    A view to display individual product details
-    """
-
     product = get_object_or_404(Product, slug=slug)
+    reviews = product.reviews.all()
+    user_has_reviewed = False
+    review_form = None
 
-    return render(request, 'products/product_detail.html', {
+    if request.user.is_authenticated:
+        user_has_reviewed = product.reviews.filter(user=request.user).exists()
+        if not user_has_reviewed:
+            review_form = ReviewForm()
+
+    context = {
         'product': product,
-    })
+        'reviews': reviews,
+        'user_has_reviewed': user_has_reviewed,
+        'review_form': review_form
+    }
+    return render(request, 'products/product_detail.html', context)
 
 
 def category_products(request, category_slug):

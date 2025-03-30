@@ -15,5 +15,8 @@ urlpatterns = [
     path('product/edit/<int:pk>/', ProductUpdateView.as_view(), name='edit_product'),
     path('product/delete/<int:pk>/', ProductDeleteView.as_view(), name='delete_product'),
     path('manage-users/promote/<int:user_id>/<str:role>/', views.promote_user, name='promote_user'),
+    path('reviews/', views.review_list, name='review_list'),
+    path('reviews/<int:review_id>/reply/', views.reply_to_review, name='reply_to_review'),
+
 
 ]

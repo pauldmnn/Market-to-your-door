@@ -7,6 +7,10 @@ from custom_admin.decorators import custom_admin_required, superuser_required
 from django.utils.decorators import method_decorator
 from checkout.models import Order, OrderItem
 from products.models import Product, Category
+from reviews.models import Review, ReviewReply
+from custom_admin.decorators import custom_admin_required
+
+
 from .forms import OrderUpdateForm, ProductForm, CategoryForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 
@@ -180,3 +184,27 @@ def promote_user(request, user_id, role):
         messages.success(request, f"{user.username} promoted to superuser.")
 
     return redirect("manage_users")
+
+
+@custom_admin_required
+def review_list(request):
+    reviews = Review.objects.all().order_by('-created_at')
+    return render(request, 'custom_admin/review_list.html', {'reviews': reviews})
+
+
+@custom_admin_required
+def reply_to_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        if content:
+            ReviewReply.objects.create(review=review, user=request.user, content=content)
+            messages.success(request, 'Reply submitted successfully.')
+        return redirect('review_list')
+
+    return render(request, 'custom_admin/reply_form.html', {'review': review})
+
+
+
+

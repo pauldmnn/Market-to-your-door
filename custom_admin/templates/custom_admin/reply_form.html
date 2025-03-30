@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+
+<div class="review-container my-6">
+    <h2>Reply to Review</h2>
+    <p><strong>{{ review.user.get_full_name|default:review.user.username }}</strong>: {{ review.comment }}</p>
+
+    <form method="post">
+    {% csrf_token %}
+    <textarea name="content" class="form-control" rows="4" required></textarea>
+    <button type="submit" class="btn btn-success mt-2">Submit Reply</button>
+    </form>
+</div>
+{% endblock %}

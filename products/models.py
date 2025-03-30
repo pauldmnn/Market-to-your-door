@@ -47,25 +47,3 @@ class Product(models.Model):
         return f"{self.name} - {self.get_price_unit_display()}"
 
 
-class Review(models.Model):
-    RATING_CHOICES = [(i, str(i)) for i in range(1, 6)]
-
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='reviews'
-    )
-    product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE,
-        related_name='reviews'
-    )
-    rating = models.PositiveIntegerField(choices=RATING_CHOICES)
-    comment = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ('user', 'product') 
-
-    def __str__(self):
-        return f"Review by {self.user.username} for {self.product.name} ({self.rating}★)"

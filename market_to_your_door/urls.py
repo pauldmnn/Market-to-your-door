@@ -32,9 +32,5 @@ urlpatterns = [
     path('profile/', include('profiles.urls')),
     path('admin-panel/', include('custom_admin.urls')),
     path('newsletter/', include('newsletter.urls')),
-
-
-
-
-
+    path('reviews/', include('reviews.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

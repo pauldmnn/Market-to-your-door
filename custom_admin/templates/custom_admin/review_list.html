@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+
+<div class="review-container my-6">
+    <h2>Customer Reviews</h2>
+    {% for review in reviews %}
+    <div class="border p-3 my-6">
+        <p><strong>{{ review.user.get_full_name|default:review.user.username }}</strong>: {{ review.comment }}</p>
+        <p><small>{{ review.created_at|date:"M d, Y" }}</small></p>
+        {% if review.reply %}
+        <p><strong>Reply:</strong> {{ review.reply.content }}</p>
+        {% else %}
+        <a href="{% url 'reply_to_review' review.id %}" class="btn btn-sm btn-primary">Reply</a>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
