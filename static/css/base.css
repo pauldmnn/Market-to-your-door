@@ -169,30 +169,35 @@ header {
 
 @media (max-width: 768px) {
     .products-container {
-        grid-template-columns: 1fr; 
+        grid-template-columns: 1fr;
     }
-
+  
     .footer {
         padding: 0.5rem 0;
         font-size: 0.75rem;
     }
-
+  
     .footer a {
         font-size: 0.75rem;
     }
   
     .footer-container {
-        flex-direction: column;
-        gap: 0.3rem;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        text-align: left;
+        padding: 0 1rem;
     }
   
     .footer-left,
-    .footer-center,
     .footer-right {
-      flex-direction: column;
-      align-items: center;
+        flex: 0 0 48%; 
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+  
+    .footer-center {
+        display: none; 
     }
   }
