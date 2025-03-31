@@ -5,21 +5,13 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import User, Group
 from custom_admin.decorators import custom_admin_required, superuser_required
 from django.utils.decorators import method_decorator
-from checkout.models import Order, OrderItem
+from checkout.models import Order
 from products.models import Product, Category
 from reviews.models import Review, ReviewReply
 from custom_admin.decorators import custom_admin_required
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.conf import settings
 from contact.models import CustomerQuestion
 from .forms import UserUpdateForm
-
-
-
-
 from .forms import OrderUpdateForm, ProductForm, CategoryForm
-from django.contrib.auth.decorators import login_required, user_passes_test
 
 
 @custom_admin_required
@@ -67,7 +59,8 @@ class ProductCreateView(CreateView):
     def form_valid(self, form):
         messages.success(self.request, "Product added successfully.")
         return super().form_valid(form)
-    
+
+
 @custom_admin_required
 class ProductListView(ListView):
     model = Product
@@ -100,7 +93,7 @@ class ProductUpdateView(UpdateView):
     def form_valid(self, form):
         messages.success(self.request, "Product updated successfully.")
         return super().form_valid(form)
-    
+
 
 @method_decorator(custom_admin_required, name='dispatch')
 class ProductDeleteView(DeleteView):
@@ -293,7 +286,3 @@ def reply_to_review(request, review_id):
 def customer_questions(request):
     questions = CustomerQuestion.objects.all().order_by('-created_at')
     return render(request, 'custom_admin/customer_questions.html', {'questions': questions})
-
-
-
-

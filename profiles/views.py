@@ -6,8 +6,6 @@ from checkout.models import Order
 from .models import UserProfile
 
 
-
-
 @login_required
 def create_profile(request):
     if request.method == 'POST':

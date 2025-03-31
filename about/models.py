@@ -8,6 +8,3 @@ class AboutUs(models.Model):
 
     def __str__(self):
         return "About Page Content"
-
-
-

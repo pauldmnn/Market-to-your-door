@@ -17,3 +17,4 @@ class ProductAdmin(admin.ModelAdmin):
     def is_in_stock(self, obj):
         return obj.inventory > 0
     is_in_stock.boolean = True
+    

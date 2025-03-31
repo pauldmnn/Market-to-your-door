@@ -4,6 +4,7 @@ from .forms import NewsletterForm
 from django.core.mail import send_mail
 from django.conf import settings
 
+
 def subscribe_to_newsletter(request):
     if request.method == 'POST':
         form = NewsletterForm(request.POST)
@@ -20,7 +21,7 @@ def subscribe_to_newsletter(request):
             )
 
             messages.success(request, "Thank you for subscribing!")
-            return redirect('market') 
+            return redirect('market')
     else:
         form = NewsletterForm()
     return render(request, 'newsletter/subscribe.html', {'form': form})

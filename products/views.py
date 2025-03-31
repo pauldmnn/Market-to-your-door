@@ -1,8 +1,5 @@
-from django.shortcuts import render, redirect, reverse, get_object_or_404
-from django.contrib import messages
-from django.db.models import Q
+from django.shortcuts import render, get_object_or_404
 from products.models import Product, Category
-from reviews.models import Review
 from reviews.forms import ReviewForm
 
 
@@ -97,4 +94,3 @@ def category_products(request, category_slug):
         'category': category,
         'products': products
     })
-    

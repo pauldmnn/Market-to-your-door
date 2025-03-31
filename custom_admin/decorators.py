@@ -1,6 +1,5 @@
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import user_passes_test
-from django.shortcuts import redirect
 from functools import wraps
 from django.utils.decorators import method_decorator
 
@@ -11,7 +10,6 @@ def superuser_required(view_func):
             raise PermissionDenied
         return view_func(request, *args, **kwargs)
     return _wrapped_view
-
 
 
 def custom_admin_required(view_func=None):
@@ -33,4 +31,3 @@ def custom_admin_required(view_func=None):
                 raise PermissionDenied
             return view_func(request, *args, **kwargs)
         return _wrapped_view
-

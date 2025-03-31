@@ -3,6 +3,7 @@ from django.conf import settings
 from products.models import Product
 from .models import Cart
 
+
 def cart_contents(request):
     """
     Ensures the cart data is available in the navbar on all pages.
@@ -43,7 +44,7 @@ def cart_contents(request):
                     "total_price": line_total,
                 })
         # If no session cart exists, cart_data remains an empty list.
-    
+
     return {
         "cart_items": cart_data,
         "grand_total": round(float(total), 2),
@@ -58,4 +59,3 @@ def site_wide_messages(request):
     return {
         "free_delivery_message": f"Free delivery on orders over £{settings.FREE_DELIVERY_THRESHOLD}"
     }
-

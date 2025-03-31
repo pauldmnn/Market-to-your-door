@@ -1,6 +1,4 @@
-from django.contrib import admin
 from django.urls import path
-from . import views
 from .views import add_to_cart, cart_detail, update_cart
 
 

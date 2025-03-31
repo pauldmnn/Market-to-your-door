@@ -17,7 +17,7 @@ class UserProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        
+
         for field_name in self.fields:
             self.fields[field_name].widget.attrs['class'] = 'form-control'
 
@@ -33,7 +33,7 @@ class UserProfileForm(forms.ModelForm):
     def save(self, commit=True):
         profile = super().save(commit=False)
         if self.user:
-            self.user.first_name = self.cleaned_data['bio'] 
+            self.user.first_name = self.cleaned_data['bio']
             if commit:
                 self.user.save()
         if commit:
@@ -46,5 +46,3 @@ class CustomLoginForm(LoginForm):
         super().__init__(*args, **kwargs)
         # Override the 'login' field's label so that it displays as "Email"
         self.fields['login'].label = "Email"
-
-

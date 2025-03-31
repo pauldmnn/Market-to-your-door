@@ -117,6 +117,7 @@ def cart_detail(request):
     }
     return render(request, 'cart/cart.html', context)
 
+
 def update_cart(request):
     """
     Update and remove products from the cart.

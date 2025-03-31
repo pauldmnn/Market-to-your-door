@@ -14,7 +14,7 @@ urlpatterns = [
     path('categories/delete/<slug:slug>/', views.delete_category, name='delete_category'),
     path("manage-users/", views.manage_users, name="manage_users"),
     path("delete-user/<int:user_id>/", views.delete_user, name="delete_user"),
-    path("promote-user/<int:user_id>/", views.promote_to_admin, name="promote_user"),    
+    path("promote-user/<int:user_id>/", views.promote_to_admin, name="promote_user"),
     path('product/edit/<int:pk>/', ProductUpdateView.as_view(), name='edit_product'),
     path('product/delete/<int:pk>/', ProductDeleteView.as_view(), name='delete_product'),
     path('manage-users/promote/<int:user_id>/<str:role>/', views.promote_user, name='promote_user'),
@@ -23,7 +23,5 @@ urlpatterns = [
     path('customer-questions/', views.customer_questions, name='customer_questions'),
     path("edit-user/<int:user_id>/", views.edit_user, name="edit_user"),
     path("demote-admin/<int:user_id>/", views.demote_admin, name="demote_admin"),
-
-
 
 ]

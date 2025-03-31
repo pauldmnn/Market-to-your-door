@@ -1,7 +1,5 @@
-import stripe
 from django.core.mail import send_mail
-from checkout.models import Order, ShippingAddress, OrderItem
-from products.models import Product
+from checkout.models import Order, ShippingAddress
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.conf import settings
@@ -22,7 +20,7 @@ class StripeWebhookHandler:
         order_items = order.items.all()
         body = render_to_string(
             'checkout/confirmation_emails/confirmation_email_body.txt',
-            {'order': order, 
+            {'order': order,
              'order_items': order_items,
              'contact_email': settings.DEFAULT_FROM_EMAIL}
         )

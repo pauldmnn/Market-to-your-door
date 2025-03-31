@@ -61,7 +61,9 @@ class CategoryForm(forms.ModelForm):
             Submit('submit', 'Save Category', css_class='btn btn-primary w-100')
         )
 
+
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'email']
+        

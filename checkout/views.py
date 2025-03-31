@@ -1,6 +1,5 @@
 
 import stripe
-import json
 from decimal import Decimal
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -10,7 +9,7 @@ from cart.models import Cart
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from products.models import Product
-from .models import Order, OrderItem, ShippingAddress
+from .models import Order, OrderItem
 from .forms import ShippingAddressForm
 from checkout.webhook_handlers import StripeWebhookHandler
 from django.views.decorators.csrf import csrf_exempt
@@ -63,12 +62,12 @@ def checkout(request):
         if form.is_valid():
             # Use the 'user' variable determined above
             shipping_address = form.save(commit=False)
-            shipping_address.user = user 
+            shipping_address.user = user
             shipping_address.save()
 
             # Create an order
             order = Order.objects.create(
-                user=user,  
+                user=user,
                 total_price=grand_total,
                 shipping_address=shipping_address
             )
@@ -90,7 +89,7 @@ def checkout(request):
                         order=order,
                         product=item["product"],
                         quantity=item["quantity"]
-                        
+      
                     )
 
                 # Clear session cart
@@ -210,22 +209,22 @@ def payment_success(request):
     if not session_id:
         messages.error(request, "No payment session found.")
         return redirect("checkout")
-    
+
     try:
         session = stripe.checkout.Session.retrieve(session_id)
         order_id = session.metadata.get("order_id")
         if not order_id:
             messages.error(request, "Order metadata missing from payment session.")
             return redirect("checkout")
-        
+
         order = get_object_or_404(Order, id=order_id)
         order.status = "paid"
         order.payment_id = session.payment_intent
         order.save()
-        
+
         messages.success(request, "Payment successful! Your order has been placed.")
         return redirect("order_success", order_id=order.id)
-        
+
     except stripe.error.StripeError as e:
         messages.error(request, "Error retrieving payment session: " + str(e))
         return redirect("checkout")
@@ -263,4 +262,3 @@ def stripe_webhook(request):
     }
     event_handler = event_map.get(event_type, handler.handle_event)
     return event_handler(event)
-
