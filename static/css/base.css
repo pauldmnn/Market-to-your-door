@@ -27,7 +27,7 @@ header {
     background-position: center;
     background-repeat: no-repeat;
     width: 100%;
-    height: 100vh; /* Full screen height */
+    height: 100vh; 
 }
 
 .market-banner {
@@ -56,7 +56,7 @@ header {
 .footer {
     background-color: #222;
     color: #000000;
-    height: 2cm;
+    height: 2.5cm;
     position: fixed;
     bottom: 0;
     width: 100%;
