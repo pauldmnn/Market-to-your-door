@@ -37,6 +37,7 @@ urlpatterns = [
     path('contact/', include('contact.urls')),
     path('', include('about.urls')),
     path('stripe/webhook/', stripe_webhook, name='stripe_webhook'),
+    
 
 ] 
 

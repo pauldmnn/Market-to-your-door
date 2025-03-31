@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /accounts/
+Disallow: /cart/
+Disallow: /checout/
+Sitemap: https://market-to-your-door-c70be1568a56.herokuapp.com/sitemap.xml

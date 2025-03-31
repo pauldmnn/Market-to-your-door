@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'django_countries',
+    'django.contrib.sitemaps',
     'market',
     'products',
     'cart',

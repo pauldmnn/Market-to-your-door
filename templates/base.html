@@ -11,6 +11,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {% endblock %}
+  {% block meta_tags %}
+  <meta name="description" content="{{ meta_description|default:"Fresh produce delivered to your door" }}">
+  <meta name="keywords" content="{{ meta_keywords|default:"market, fruits, vegetables, meat, delivery" }}">
+  <meta name="robots" content="index, follow">
+  {% endblock %}
 
   {% block corejs %}
   <script src="https://kit.fontawesome.com/f31014cfb8.js" crossorigin="anonymous"></script>
