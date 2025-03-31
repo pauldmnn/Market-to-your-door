@@ -69,8 +69,9 @@ INSTALLED_APPS = [
     
 
     # Third-Party Apps
-    "crispy_forms",  
+    "crispy_forms",
     "crispy_bootstrap5",
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -192,6 +193,25 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+
+if 'USE_AWS' in os.environ:
+    # Bucket configuration
+    AWS_STORAGE_BUCKET_NAME = 'market-to-your-door'
+    AWS_S2_REGION = 'eu-north-1'
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY-ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+    # Static and media files
+    STATICTFILES_STORAGE = 'custom_storages.StaticStorage'
+    STATICFILES_LOCATION = 'static'
+    DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
+    MEDIAFILES_LOCATION = 'media'
+
+    # Override static and media URLs in production
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATICFILES_LOCATION}/'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
+
 FREE_DELIVERY_THRESHOLD = 50
 STANDARD_DELIVERY_PERCENTAGE = 10
 
@@ -210,7 +230,7 @@ if not STRIPE_PUBLIC_KEY or not STRIPE_SECRET_KEY:
     raise ValueError("Stripe API keys are missing from the environment variables!")
 if not STRIPE_WEBHOOK_SECRET:
     raise ValueError("Stripe webhook secret is missing from the environment variables!")
-
+DEFAULT_FROM_EMAIL = 'markettyd@example.com'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
