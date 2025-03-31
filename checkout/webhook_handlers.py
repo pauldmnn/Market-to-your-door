@@ -54,17 +54,19 @@ class StripeWebhookHandler:
 
             shipping_details = intent.get("shipping", {})
             address = order.shipping_address
-            if not address:
-                address = ShippingAddress.objects.create(
-                    user=order.user,
-                    full_name=shipping_details.get("name"),
-                    address_line1=shipping_details.get("address", {}).get("line1"),
-                    address_line2=shipping_details.get("address", {}).get("line2", ""),
-                    city=shipping_details.get("address", {}).get("city"),
-                    postcode=shipping_details.get("address", {}).get("postal_code"),
-                    country=shipping_details.get("address", {}).get("country"),
-                    phone=shipping_details.get("phone", "")
-                )
+            if shipping_details:
+                address = order.shipping_address
+                if not address:
+                    address = ShippingAddress.objects.create(
+                        user=order.user,
+                        full_name=shipping_details.get("name"),
+                        address_line1=shipping_details.get("address", {}).get("line1"),
+                        address_line2=shipping_details.get("address", {}).get("line2", ""),
+                        city=shipping_details.get("address", {}).get("city"),
+                        postcode=shipping_details.get("address", {}).get("postal_code"),
+                        country=shipping_details.get("address", {}).get("country"),
+                        phone=shipping_details.get("phone", "")
+                    )
                 order.shipping_address = address
 
             order.save()
