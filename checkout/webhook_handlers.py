@@ -34,7 +34,6 @@ class StripeWebhookHandler:
             [cust_email]
         )
 
-
     def handle_event(self, event):
         """Handle unknown webhook events"""
         return HttpResponse(status=200)
