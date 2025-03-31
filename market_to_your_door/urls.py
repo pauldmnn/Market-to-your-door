@@ -36,7 +36,7 @@ urlpatterns = [
     path('reviews/', include('reviews.urls')),
     path('contact/', include('contact.urls')),
     path('', include('about.urls')),
-    path('webhook/stripe/', stripe_webhook, name='stripe_webhook'),
+    path('stripe/webhook/', stripe_webhook, name='stripe_webhook'),
     
 
 ] 
