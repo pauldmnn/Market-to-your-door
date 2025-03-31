@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from profiles.views import CustomConfirmEmailView
+from checkout.views import stripe_webhook
 
 
 urlpatterns = [
@@ -35,6 +36,8 @@ urlpatterns = [
     path('reviews/', include('reviews.urls')),
     path('contact/', include('contact.urls')),
     path('', include('about.urls')),
+    path('stripe/webhook/', stripe_webhook, name='stripe_webhook'),
+    
 
 ] 
 
