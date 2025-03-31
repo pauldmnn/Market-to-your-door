@@ -13,6 +13,8 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 from contact.models import CustomerQuestion
+from .forms import UserUpdateForm
+
 
 
 
@@ -233,6 +235,37 @@ def promote_user(request, user_id, role):
         user.is_superuser = True
         user.save()
         messages.success(request, f"{user.username} promoted to superuser.")
+
+    return redirect("manage_users")
+
+
+@superuser_required
+def edit_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+
+    form = UserUpdateForm(request.POST or None, instance=user)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "User details updated successfully.")
+        return redirect("manage_users")
+
+    return render(request, "custom_admin/edit_user.html", {
+        "form": form,
+        "edited_user": user
+    })
+
+
+@superuser_required
+def demote_admin(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    admin_group = Group.objects.get(name="custom_admin")
+
+    if admin_group in user.groups.all():
+        user.groups.remove(admin_group)
+        messages.success(request, f"{user.username} has been demoted to a normal user.")
+    else:
+        messages.warning(request, f"{user.username} is not an admin.")
 
     return redirect("manage_users")
 

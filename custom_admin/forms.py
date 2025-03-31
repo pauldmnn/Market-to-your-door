@@ -3,6 +3,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit
 from checkout.models import Order 
 from products.models import Product, Category
+from django.contrib.auth.models import User
 
 
 class OrderUpdateForm(forms.ModelForm):
@@ -60,3 +61,7 @@ class CategoryForm(forms.ModelForm):
             Submit('submit', 'Save Category', css_class='btn btn-primary w-100')
         )
 
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email']

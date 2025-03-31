@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container my-6">
+  <h2>Edit User: {{ edited_user.username }}</h2>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-dark">Save Changes</button>
+    <a href="{% url 'manage_users' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}
