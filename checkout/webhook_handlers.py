@@ -17,10 +17,14 @@ class StripeWebhookHandler:
         subject = render_to_string(
             'checkout/confirmation_emails/confirmation_email_subject.txt',
             {'order': order}
-        )
+        ).strip()
+
+        order_items = order.items.all()
         body = render_to_string(
             'checkout/confirmation_emails/confirmation_email_body.txt',
-            {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL}
+            {'order': order, 
+             'order_items': order_items,
+             'contact_email': settings.DEFAULT_FROM_EMAIL}
         )
 
         send_mail(
@@ -29,6 +33,7 @@ class StripeWebhookHandler:
             settings.DEFAULT_FROM_EMAIL,
             [cust_email]
         )
+
 
     def handle_event(self, event):
         """Handle unknown webhook events"""
@@ -66,10 +71,17 @@ class StripeWebhookHandler:
             order.save()
 
             # Reduce product inventory
-            for item in order.orderitem_set.all():
-                product = item.product
-                product.inventory -= item.quantity
-                product.save()
+            try:
+                for item in order.items.all():
+                    product = item.product
+                    if product.inventory >= item.quantity:
+                        product.inventory -= item.quantity
+                    else:
+                        product.inventory = 0
+                    product.save()
+            except Exception as e:
+                print(f"Error updating inventory: {str(e)}")
+                return HttpResponse(status=500)
 
             # Send confirmation email
             self._send_confirmation_email(order)

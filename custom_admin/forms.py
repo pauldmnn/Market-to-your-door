@@ -1,7 +1,7 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit
-from checkout.models import Order 
+from checkout.models import Order
 from products.models import Product, Category
 from django.contrib.auth.models import User
 
@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 class OrderUpdateForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['status', 'payment_id']  
+        fields = ['status', 'payment_id']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

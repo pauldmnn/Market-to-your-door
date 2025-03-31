@@ -185,7 +185,6 @@ def delete_category(request, slug):
     })
 
 
-
 @superuser_required
 def manage_users(request):
     user_type = request.GET.get("type", "normal")
