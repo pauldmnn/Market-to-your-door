@@ -5,7 +5,7 @@ html {
 body {
     color: #000000;
     font-family: 'Lato';
-    padding-bottom: 2.5cm; 
+    padding-bottom: 70px; 
 
 }
 
@@ -28,6 +28,7 @@ header {
     background-repeat: no-repeat;
     width: 100%;
     height: 100vh; 
+    position: fixed;
 }
 
 .market-banner {
@@ -56,7 +57,7 @@ header {
 .footer {
     background-color: #222;
     color: #000000;
-    height: 2.5cm;
+    height: 2cm;
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -170,16 +171,22 @@ header {
     .products-container {
         grid-template-columns: 1fr; 
     }
- 
+
     .footer {
-      height: auto;
-      padding: 1rem 0;
+        padding: 0.5rem 0;
+        font-size: 0.75rem;
+    }
+
+    .footer a {
+        font-size: 0.75rem;
     }
   
     .footer-container {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
+        flex-direction: column;
+        gap: 0.3rem;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
     }
   
     .footer-left,
