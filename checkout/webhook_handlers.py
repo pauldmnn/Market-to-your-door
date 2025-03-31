@@ -2,7 +2,6 @@ import stripe
 from django.core.mail import send_mail
 from checkout.models import Order, ShippingAddress, OrderItem
 from products.models import Product
-from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.conf import settings
@@ -13,17 +12,17 @@ class StripeWebhookHandler:
         self.request = request
 
     def _send_confirmation_email(self, order):
-        """
-        Send the user confirmation email
-        """
-        cust_email = order.email
+        """Send the user confirmation email"""
+        cust_email = order.shipping_address.email
         subject = render_to_string(
             'checkout/confirmation_emails/confirmation_email_subject.txt',
-            {'order': order})
+            {'order': order}
+        )
         body = render_to_string(
             'checkout/confirmation_emails/confirmation_email_body.txt',
-            {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL})
-        
+            {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL}
+        )
+
         send_mail(
             subject,
             body,
@@ -40,18 +39,16 @@ class StripeWebhookHandler:
         metadata = intent.get("metadata", {})
         order_id = metadata.get("order_id")
 
-        billing_details = intent.get("charges", {}).get("data", [{}])[0].get("billing_details", {})
-        shipping_details = intent.get("shipping", {})
-
         try:
             order = Order.objects.get(id=order_id)
-            order.status = "paid"
+            order.status = "Paid"
             order.payment_id = intent.id
 
+            billing_details = intent.get("charges", {}).get("data", [{}])[0].get("billing_details", {})
             order.billing_name = billing_details.get("name")
             order.billing_email = billing_details.get("email")
-            order.save()
 
+            shipping_details = intent.get("shipping", {})
             address = order.shipping_address
             if not address:
                 address = ShippingAddress.objects.create(
@@ -65,11 +62,23 @@ class StripeWebhookHandler:
                     phone=shipping_details.get("phone", "")
                 )
                 order.shipping_address = address
-                order.save()
 
+            order.save()
+
+            # Reduce product inventory
+            for item in order.orderitem_set.all():
+                product = item.product
+                product.inventory -= item.quantity
+                product.save()
+
+            # Send confirmation email
+            self._send_confirmation_email(order)
+
+            print(f"Stripe payment succeeded for order {order_id}")
             return HttpResponse(status=200)
 
         except Order.DoesNotExist:
+            print(f"Order {order_id} not found in DB")
             return HttpResponse(content=f"Order {order_id} not found", status=404)
 
     def handle_payment_intent_failed(self, event):

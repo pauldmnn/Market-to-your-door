@@ -153,7 +153,6 @@ def send_order_confirmation_email(order):
     )
 
 
-
 def order_summary(request, order_id):
     """
     Display the order summary.
