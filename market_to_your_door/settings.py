@@ -38,7 +38,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
-    'market-to-your-door-c70be1568a56.herokuapp.com/',
+    'market-to-your-door-c70be1568a56.herokuapp.com',
     ]
 
 
