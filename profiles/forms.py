@@ -44,5 +44,4 @@ class UserProfileForm(forms.ModelForm):
 class CustomLoginForm(LoginForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Override the 'login' field's label so that it displays as "Email"
         self.fields['login'].label = "Email"
