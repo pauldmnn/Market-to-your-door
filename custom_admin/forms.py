@@ -25,7 +25,7 @@ class OrderUpdateForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price', 'inventory', 'category', 'image', 'slug']
+        fields = ['name', 'description', 'price', 'price_unit', 'inventory', 'category', 'image', 'slug']
         widgets = {
             'slug': forms.TextInput(attrs={'readonly': True}) 
         }
@@ -38,6 +38,7 @@ class ProductForm(forms.ModelForm):
             Field('name'),
             Field('description'),
             Field('price'),
+            Field('price_unit'),
             Field('inventory'),
             Field('category'),
             Field('image'),
