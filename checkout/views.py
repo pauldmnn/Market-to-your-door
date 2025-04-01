@@ -89,7 +89,6 @@ def checkout(request):
                         order=order,
                         product=item["product"],
                         quantity=item["quantity"]
-      
                     )
 
                 # Clear session cart
@@ -203,7 +202,8 @@ def payment(request, order_id):
 
 def payment_success(request):
     """
-    Mark the order as 'paid' after successful payment and redirect to order success.
+    Mark the order as 'paid' after successful 
+    payment and redirect to order success.
     """
     session_id = request.GET.get("session_id")
     if not session_id:
