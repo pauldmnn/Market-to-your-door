@@ -3,5 +3,5 @@
 {% block content %}{% endblock content %}
 
 {% blocktrans with site_name=current_site.name site_domain=current_site.domain %}Thank you for using Market To Your Door!!
-{{ current_site.domain }}{% endblocktrans %}
+{% endblocktrans %}
 {% endautoescape %}
