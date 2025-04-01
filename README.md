@@ -1,131 +1,287 @@
-![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
+# Market To Your Door
 
-Welcome USER_NAME,
+An e-commerce platform for fresh produce delivery including fruits, vegetables, and meats. Users can browse, search, and order items, while store admins can manage products, orders, and users through a custom admin dashboard.
 
-This is the Code Institute student template for Gitpod. We have preinstalled all of the tools you need to get started. It's perfectly ok to use this template as the basis for your project submissions.
+## Preview
+###  Live Site
 
-You can safely delete this README.md file or change it for your own project. Please do read it at least once, though! It contains some important information about Gitpod and the extensions we use. Some of this information has been updated since the video content was created. The last update to this file was: **June 18, 2024**
+[Visit the Live Site](https://market-to-your-door-c70be1568a56.herokuapp.com/)
 
-## Gitpod Reminders
+### Responsive Design (Mobile, Tablet, Desktop)
 
-To run a frontend (HTML, CSS, Javascript only) application in Gitpod, in the terminal, type:
+![Responsive Screenshot](static/images/responsiveness.jpg)
 
-`python3 -m http.server`
 
-A blue button should appear to click: _Make Public_,
-
-Another blue button should appear to click: _Open Browser_.
-
-To run a backend Python file, type `python3 app.py` if your Python file is named `app.py`, of course.
-
-A blue button should appear to click: _Make Public_,
-
-Another blue button should appear to click: _Open Browser_.
-
-By Default, Gitpod gives you superuser security privileges. Therefore, you do not need to use the `sudo` (superuser do) command in the bash terminal in any of the lessons.
-
-To log into the Heroku toolbelt CLI:
-
-1. Log in to your Heroku account and go to *Account Settings* in the menu under your avatar.
-2. Scroll down to the *API Key* and click *Reveal*
-3. Copy the key
-4. In Gitpod, from the terminal, run `heroku_config`
-5. Paste in your API key when asked
-
-You can now use the `heroku` CLI program - try running `heroku apps` to confirm it works. This API key is unique and private to you, so do not share it. If you accidentally make it public, you can create a new one with _Regenerate API Key_.
-
-### Connecting your Mongo database
-
-- **Connect to Mongo CLI on a IDE**
-- navigate to your MongoDB Clusters Sandbox
-- click **"Connect"** button
-- select **"Connect with the MongoDB shell"**
-- select **"I have the mongo shell installed"**
-- choose **mongosh (2.0 or later)** for : **"Select your mongo shell version"**
-- choose option: **"Run your connection string in your command line"**
-- in the terminal, paste the copied code `mongo "mongodb+srv://<CLUSTER-NAME>.mongodb.net/<DBname>" --apiVersion 1 --username <USERNAME>`
-  - replace all `<angle-bracket>` keys with your own data
-- enter password _(will not echo **\*\*\*\*** on screen)_
-
-------
-
-## Release History
-
-We continually tweak and adjust this template to help give you the best experience. Here is the version history:
-
-**June 18, 2024,** Add Mongo back into template
-
-**June 14, 2024,** Temporarily remove Mongo until the key issue is resolved
-
-**May 28 2024:** Fix Mongo and Links installs
-
-**April 26 2024:** Update node version to 16
-
-**September 20 2023:** Update Python version to 3.9.17.
-
-**September 1 2021:** Remove `PGHOSTADDR` environment variable.
-
-**July 19 2021:** Remove `font_fix` script now that the terminal font issue is fixed.
-
-**July 2 2021:** Remove extensions that are not available in Open VSX.
-
-**June 30 2021:** Combined the P4 and P5 templates into one file, added the uptime script. See the FAQ at the end of this file.
-
-**June 10 2021:** Added: `font_fix` script and alias to fix the Terminal font issue
-
-**May 10 2021:** Added `heroku_config` script to allow Heroku API key to be stored as an environment variable.
-
-**April 7 2021:** Upgraded the template for VS Code instead of Theia.
-
-**October 21 2020:** Versions of the HTMLHint, Prettier, Bootstrap4 CDN and Auto Close extensions updated. The Python extension needs to stay the same version for now.
-
-**October 08 2020:** Additional large Gitpod files (`core.mongo*` and `core.python*`) are now hidden in the Explorer, and have been added to the `.gitignore` by default.
-
-**September 22 2020:** Gitpod occasionally creates large `core.Microsoft` files. These are now hidden in the Explorer. A `.gitignore` file has been created to make sure these files will not be committed, along with other common files.
-
-**April 16 2020:** The template now automatically installs MySQL instead of relying on the Gitpod MySQL image. The message about a Python linter not being installed has been dealt with, and the set-up files are now hidden in the Gitpod file explorer.
-
-**April 13 2020:** Added the _Prettier_ code beautifier extension instead of the code formatter built-in to Gitpod.
-
-**February 2020:** The initialisation files now _do not_ auto-delete. They will remain in your project. You can safely ignore them. They just make sure that your workspace is configured correctly each time you open it. It will also prevent the Gitpod configuration popup from appearing.
-
-**December 2019:** Added Eventyret's Bootstrap 4 extension. Type `!bscdn` in a HTML file to add the Bootstrap boilerplate. Check out the <a href="https://github.com/Eventyret/vscode-bcdn" target="_blank">README.md file at the official repo</a> for more options.
-
-------
-
-## FAQ about the uptime script
-
-**Why have you added this script?**
-
-It will help us to calculate how many running workspaces there are at any one time, which greatly helps us with cost and capacity planning. It will help us decide on the future direction of our cloud-based IDE strategy.
-
-**How will this affect me?**
-
-For everyday usage of Gitpod, it doesn’t have any effect at all. The script only captures the following data:
-
-- An ID that is randomly generated each time the workspace is started.
-- The current date and time
-- The workspace status of “started” or “running”, which is sent every 5 minutes.
-
-It is not possible for us or anyone else to trace the random ID back to an individual, and no personal data is being captured. It will not slow down the workspace or affect your work.
-
-**So….?**
-
-We want to tell you this so that we are being completely transparent about the data we collect and what we do with it.
-
-**Can I opt out?**
-
-Yes, you can. Since no personally identifiable information is being captured, we'd appreciate it if you let the script run; however if you are unhappy with the idea, simply run the following commands from the terminal window after creating the workspace, and this will remove the uptime script:
-
-```
-pkill uptime.sh
-rm .vscode/uptime.sh
-```
-
-**Anything more?**
-
-Yes! We'd strongly encourage you to look at the source code of the `uptime.sh` file so that you know what it's doing. As future software developers, it will be great practice to see how these shell scripts work.
+## Table of Contents
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [SEO Optimizations](#seo-optimizations)
+- [AWS Integration](#aws-integration)
+- [Stripe Integration](#stripe-integration)
+- [Custom Admin Dashboard](#custom-admin-dashboard)
+- [User Permissions](#user-permissions)
+- [Marketing Strategy](#marketing-strategy)
+- [Testing](#testing)
+- [Installation](#installation)
+- [Deployment](#deployment)
+- [License](#license)
 
 ---
 
-Happy coding!
+## Features
+### User
+- Register, login (with modal forms)
+- View product list and detail pages
+- Add to cart (supports both guests and authenticated users)
+- Secure checkout with shipping form
+- Stripe payment integration
+- Email confirmation for orders
+- View previous orders (authenticated users)
+- Subscribe to newsletter
+- Submit contact form
+
+### Product Management
+- CRUD operations on products and categories
+- Inventory updates after purchase
+- Display average rating and user reviews
+- Admin replies to reviews
+
+### Orders & Shipping
+- Order status: Pending, Paid, Shipped, Delivered, Cancelled
+- Admin can mark as shipped
+
+### Reviews
+- Users can leave reviews for products
+- Admin can reply to reviews
+
+### Admin Dashboard
+- View all orders, manage users
+- Promote/demote user roles (admin, manager, superuser)
+- Add/edit/delete categories and products
+- Reply to user reviews
+- View contact form submissions
+
+## Tech Stack
+- Python 3.11
+- Django 4+
+- Django Allauth
+- Stripe
+- AWS S3
+- PostgreSQL
+- Bootstrap 5.3
+- Crispy Forms 
+- Heroku (for deployment)
+
+---
+
+## Developed Using
+
+- This application was built using Visual Studio Code (VS Code) as the primary development environment. Extensions used include:
+  - Python
+  - Django
+  - Prettier
+  - Live Server`
+
+- The project was version-controlled using Git and hosted on GitHub.
+
+---
+
+## SEO Optimizations
+- Meta titles and descriptions on:
+  - Home page
+  - Product list & product detail
+  - Category list
+  - Contact, About, Newsletter
+- Image alt tags on product images
+- Sitemap and robots.txt
+- Clean URL slugs for products and categories
+
+### Sitemap Setup
+ - Sitemap was created usin XML-Sitemaps.com Sitemap Generator.
+ - The sitemap file is located in the base directory sitemap.xml
+
+---
+
+### How to Run Locally
+  # Clone the repository
+  git clone https://github.com/yourusername/market-to-your-door.git
+  cd market-to-your-door
+
+  # Create and activate a virtual environment:
+  python -m venv venv
+  source venv/bin/activate  # On Windows use: venv\Scripts\activate
+
+  # Install dependencies:
+  ```bash
+  pip install -r requirements.txt
+  ```
+
+  # Add a env.py file with your environment variables:
+  SECRET_KEY=your-secret-key
+  DEBUG=True
+  STRIPE_SECRET_KEY=your-stripe-secret
+  STRIPE_PUBLIC_KEY=your-stripe-public
+  STRIPE_WEBHOOK_SECRET=your-webhook-secret
+  AWS_ACCESS_KEY_ID=your-aws-key
+  AWS_SECRET_ACCESS_KEY=your-aws-secret
+  AWS_STORAGE_BUCKET_NAME=markettyd
+
+  # Run migrations and start server:
+  ```bash
+  python manage.py migrate
+  python manage.py runserver
+  ```
+
+
+---
+
+## AWS Integration (S3 Bucket)
+- Bucket name: `markettyd`
+- Static and media file storage configured via `custom_storages.py`
+- `collectstatic` pushes CSS, JS, and image files to AWS S3
+- Environment variables:
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_SECRET_ACCESS_KEY`
+  - `AWS_STORAGE_BUCKET_NAME`
+
+---
+
+## Stripe Integration
+- Stripe payment intent created during checkout
+- Webhook to `/stripe/webhook/` processes `payment_intent.succeeded`
+- Inventory is reduced, email confirmation sent, and order marked as paid
+- Custom webhook handler logs and processes events
+
+---
+
+## Custom Admin Dashboard
+- Accessible by admins and superusers
+- Filter orders, view product list, add new categories/products
+- Edit and delete existing products
+- Respond to user reviews
+
+---
+
+## User Permissions
+1. **Superuser**: Full access, can promote users to any role
+3. **Admin**: Can only manage orders, products and categories
+4. **Normal User**: Shop and checkout
+
+---
+
+## Marketing Strategy
+- SEO-optimized content and URLs
+- Newsletter with email confirmation
+- Facebook page linked in the footer
+- CTA "Shop Now" button on the landing page
+- Customer reviews to build trust
+- Social proof (testimonials, FAQs coming soon)
+
+---
+
+Facebook Marketing Integration
+
+Market To Your Door has a fully operational Facebook page with:
+
+![Facebook Screenshot](static/images/facebook_1.jpg)
+![Facebook Screenshot](static/images/facebook_2.jpg)
+![Facebook Screenshot](static/images/facebook_3.jpg)
+![Facebook Screenshot](static/images/facebook_4.jpg)
+
+
+
+Visit our Facebook Page →
+
+---
+
+## Testing
+- Test-driven development using `pytest`
+- Test completed in the app's test.py
+- Models, views, forms, and custom logic are tested
+
+Run tests:
+```bash
+pytest 
+```
+# Automated Tests:
+![Automate Testing Screenshot](static/images/automated_test.jpg)
+
+# Manual Testing:
+
+A full suite of manual test cases is documented in a table format for all core features including checkout, forms, cart logic, and permissions.
+
+
+| #  | Feature                     | Test Case Description                                             | Expected Result                                                       |
+|----|-----------------------------|--------------------------------------------------------------------|------------------------------------------------------------------------|
+| 1  | User Registration           | User can register using modal or registration page                | Account is created and user is redirected/logged in                  |
+| 2  | User Login                  | User logs in using the login modal                                | User is authenticated and redirected to homepage                     |
+| 3  | User Logout                 | User clicks logout in navbar or modal                             | User is logged out and returned to homepage                          |
+| 4  | Profile Creation            | New user completes profile on registration                        | Profile is created in the profiles table                             |
+| 5  | Profile Edit                | User edits full name, phone, or location                          | Data is saved and reflected in their account                         |
+| 6  | Add to Cart (auth user)     | Authenticated user adds a product to cart                         | Cart is updated and quantity is shown                                |
+| 7  | Add to Cart (guest)         | Guest adds product to cart                                        | Cart is stored in session                                            |
+| 8  | Cart Quantity Update        | User updates quantity in cart                                     | Quantity changes and total updates accordingly                       |
+| 9  | Product Page                | User visits individual product page                               | Product details and reviews are displayed                            |
+| 10 | Product Filtering           | User filters products by category, price, or search               | Filtered products list is displayed                                  |
+| 11 | Product Sorting             | User sorts products by price/name/category                        | Products are sorted correctly                                        |
+| 12 | Product Out of Stock        | User tries to add out-of-stock product                            | Error message shown and product not added                            |
+| 13 | Checkout Authenticated      | Auth user completes shipping form and checks out                  | Order is created, payment is triggered                               |
+| 14 | Checkout Guest              | Guest completes checkout                                          | Order is created, session cart cleared, and payment processed        |
+| 15 | Stripe Payment Success      | User completes payment via Stripe                                 | Order marked as paid, confirmation email sent                        |
+| 16 | Stripe Payment Fail         | Payment fails during checkout                                     | Error message shown                                                  |
+| 17 | Order Summary               | User views their order summary                                    | Correct order data is shown                                          |
+| 18 | Order Email Confirm         | After successful order, user receives confirmation email          | Email contains order details and contact info                        |
+| 19 | Admin Dashboard Access      | Superuser accesses /custom_admin/                                 | Dashboard is accessible only for admin roles                         |
+| 20 | Add Product (admin)         | Admin adds a new product from dashboard                           | Product is added and visible in list                                 |
+| 21 | Edit Product (admin)        | Admin edits existing product                                      | Product updates saved                                                |
+| 22 | Delete Product (admin)      | Admin deletes a product                                           | Product is removed from list                                         |
+| 23 | Add Category (admin)        | Admin adds a new product category                                 | Category is created and usable in product forms                      |
+| 24 | Delete Category w/ Product  | Admin tries to delete category that has products                  | Error shown preventing deletion                                      |
+| 25 | Promote to Admin            | Superuser promotes user from manage users page                    | User now has admin access                                            |
+| 26 | Demote Admin                | Superuser demotes admin from manage users                         | User loses admin privileges                                          |
+| 27 | View Reviews                | Admin views all product reviews in dashboard                      | List of all reviews is shown                                         |
+| 28 | Reply to Review             | Admin replies to a review                                         | Reply is saved and visible on product page                           |
+| 29 | About Us Page               | User visits /about/ page                                          | Content from AboutUs model is shown                                 |
+| 30 | Contact Form Submission     | User fills and submits contact form                               | Entry saved in DB and success message shown                          |
+| 31 | Newsletter Subscribe        | User submits email for newsletter                                 | Subscriber added, and confirmation email sent                        |
+| 32 | Duplicate Newsletter        | Same email tries to subscribe again                               | Error shown – already subscribed                                     |
+| 33 | SEO Metadata                | View page source of key views                                     | Contains unique title, meta description, OpenGraph tags             |
+| 34 | Favicon                     | Browser tab shows site icon                                       | Correct icon is loaded                                               |
+| 35 | Responsive Navbar           | Burger menu collapses navbar on mobile                            | Mobile view shows dropdown properly                                  |
+| 36 | Responsive Footer           | Footer stacks on small screens (2-column layout)                  | About/Contact left, Subscribe/Facebook right                         |
+| 37 | Admin Login Restriction     | Non-admin tries accessing /custom_admin/ or editing user roles    | 403 Forbidden or redirect to login                                   |
+| 38 | Webhook Trigger             | Stripe webhook fires after payment                                | Order updated to "Paid" and stock reduced                            |
+| 39 | Inventory Reduction         | Product quantity reduces after order                              | Inventory updates in DB                                              |
+| 40 | Search                      | User searches for product by name                                 | Matching products are returned                                       |
+
+
+
+---
+
+## Deployment
+- Hosted on Heroku
+- Uses Heroku PostgreSQL
+- AWS S3 for static/media
+- Add the following config vars:
+  - `DEBUG=False`
+  - `AWS_STORAGE_BUCKET_NAME`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
+  - `STRIPE_SECRET_KEY`, `STRIPE_PUBLIC_KEY`, `STRIPE_WEBHOOK_SECRET`
+
+```bash
+git push heroku main
+heroku run python manage.py migrate
+heroku run python manage.py collectstatic --noinput
+```
+### Acknowledgements
+
+- Django Documentation
+- Stripe Docs
+- AWS S3 Docs
+- Crispy Forms
+---
+
+### Author
+
+Paul Dominan - Full Stack Developer
+GitHub: @pauldmnn
+
