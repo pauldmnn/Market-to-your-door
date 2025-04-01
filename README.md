@@ -46,6 +46,10 @@ An e-commerce platform for fresh produce delivery including fruits, vegetables, 
 - Display average rating and user reviews
 - Admin replies to reviews
 
+### Sorting and Filtering
+- User can search for a product in the nav-bar search box. Once they inputed the product name the need to press enter.
+- In products page the user can filter the products by category, price, name. Once they selected the filter they need to press Apply filter
+
 ### Orders & Shipping
 - Order status: Pending, Paid, Shipped, Delivered, Cancelled
 - Admin can mark as shipped
@@ -259,6 +263,18 @@ A full suite of manual test cases is documented in a table format for all core f
 ---
 
 ## Deployment
+
+-The main branch of this repository is the most current version and has been used for the deployed version of the site. The Code -Institute student template was used to create this project.
+
+# Code Institute Template
+
+- Click Use This Template button.
+- Give your repository a name, and description.
+- Open Github and log into your account.
+- Click New Workspace button.
+- Create a workspace from your project repository by creating a clone.
+
+# Heroku
 - Hosted on Heroku
 - Uses Heroku PostgreSQL
 - AWS S3 for static/media
@@ -272,7 +288,50 @@ git push heroku main
 heroku run python manage.py migrate
 heroku run python manage.py collectstatic --noinput
 ```
-### Acknowledgements
+
+# Fork
+- Go to the original GitHub repository.
+- Click the Fork button in the top-right corner.
+- GitHub will copy the repo into your account.
+- Then you can clone it locally:
+```bash
+git clone https://github.com/YOUR_USERNAME/your-forked-repo.git
+```
+
+# Clone
+- On the GitHub repo page, click the Code button.
+- Copy the HTTPS URL.
+
+- In your terminal:
+```bash
+git clone https://github.com/username/repository-name.git
+```
+
+- Navigate into the cloned project:
+```bash
+cd repository-name
+```
+
+- Install dependencies and start development:
+```bash
+python -m venv venv
+source venv/bin/activate   # or venv\Scripts\activate on Windows
+pip install -r requirements.txt
+```
+----
+
+## Validation
+# HTML
+- No errors were returned on validator.w3.org/
+![HTML Validator Screenshot](static/images/validator_html.jpg)
+
+# CSS
+- No errors were returned on jigsaw.w3.org
+![HTML Validator Screenshot](static/images/css_validator.jpg)
+
+---
+
+## Acknowledgements
 
 - Django Documentation
 - Stripe Docs
@@ -280,8 +339,14 @@ heroku run python manage.py collectstatic --noinput
 - Crispy Forms
 ---
 
-### Author
+## Credits
+- Google for idea and content
+- Kaggle.com for photos
+- ChatGPT, Stack Overflow, YouTube for various code assistace
+---
 
-Paul Dominan - Full Stack Developer
+## Author
+
+Paul Dominan - Full Stack Developer Student
 GitHub: @pauldmnn
 
