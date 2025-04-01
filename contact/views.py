@@ -12,5 +12,5 @@ def contact_us(request):
             return redirect('contact_us')
     else:
         form = ContactForm()
-    
+
     return render(request, 'contact/contact_us.html', {'form': form})
