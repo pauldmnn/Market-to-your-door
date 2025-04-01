@@ -1,22 +1,43 @@
-{% extends "account/base_reauthenticate.html" %}
+{% extends "base.html" %}
 {% load allauth %}
 {% load i18n %}
-{% block reauthenticate_content %}
-    {% element p %}
-        {% blocktranslate %}Enter your password:{% endblocktranslate %}
-    {% endelement %}
-    {% url 'account_reauthenticate' as action_url %}
-    {% element form form=form method="post" action=action_url %}
-        {% slot body %}
-            {% csrf_token %}
-            {% element fields form=form unlabeled=True %}
-            {% endelement %}
-            {{ redirect_field }}
-        {% endslot %}
-        {% slot actions %}
-            {% element button type="submit" tags="primary,reauthenticate" %}
-                {% trans "Confirm" %}
-            {% endelement %}
-        {% endslot %}
-    {% endelement %}
+
+{% block title %}{% trans "Re-authenticate" %}{% endblock %}
+
+{% block content %}
+<div class="container my-6">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm rounded-3">
+                <div class="card-body p-4">
+
+                    <h2 class="mb-4 text-center">{% trans "Re-authenticate" %}</h2>
+                    <p class="text-center text-muted">
+                        {% blocktranslate %}Enter your password to confirm your identity.{% endblocktranslate %}
+                    </p>
+
+                    <form method="post" action="{% url 'account_reauthenticate' %}">
+                        {% csrf_token %}
+                        {{ redirect_field }}
+
+                        {% for field in form %}
+                            <div class="mb-3">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="text-danger small">{{ field.errors|striptags }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            {% trans "Confirm" %}
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
