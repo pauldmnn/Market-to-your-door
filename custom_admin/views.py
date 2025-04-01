@@ -104,7 +104,7 @@ class ProductDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, "Product deleted successfully.")
         return super().delete(request, *args, **kwargs)
-    
+
 
 @method_decorator(custom_admin_required, name='dispatch')
 def add_category(request):
@@ -162,7 +162,7 @@ def edit_category(request, slug):
 @custom_admin_required
 def delete_category(request, slug):
     category = get_object_or_404(Category, slug=slug)
-    products = category.products.all()  
+    products = category.products.all()
 
     if request.method == 'POST':
         if products.exists():
