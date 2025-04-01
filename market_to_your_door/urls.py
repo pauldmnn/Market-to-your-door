@@ -35,7 +35,7 @@ urlpatterns = [
     path('newsletter/', include('newsletter.urls')),
     path('reviews/', include('reviews.urls')),
     path('contact/', include('contact.urls')),
-    path('', include('about.urls')),
+    path('about/', include('about.urls')),
     path('stripe/webhook/', stripe_webhook, name='stripe_webhook'),
     
 
