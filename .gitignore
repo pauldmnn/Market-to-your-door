@@ -5,6 +5,7 @@ env.py
 *.sqlite3
 *.pyc
 __pycache__/
+.pytest_cache/
 .venv
 .env
 *.py[cod]
