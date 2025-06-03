@@ -15,16 +15,22 @@ An e-commerce platform for fresh produce delivery including fruits, vegetables, 
 ## Table of Contents
 - [Features](#features)
 - [Tech Stack](#tech-stack)
+- [Developed Using](#developed-using)
+- [Design Process](#design-process)
+- [Data Model](#data-model)
 - [SEO Optimizations](#seo-optimizations)
 - [AWS Integration](#aws-integration)
 - [Stripe Integration](#stripe-integration)
 - [Custom Admin Dashboard](#custom-admin-dashboard)
 - [User Permissions](#user-permissions)
+- [Business Model](#business-model)
 - [Marketing Strategy](#marketing-strategy)
 - [Testing](#testing)
-- [Installation](#installation)
 - [Deployment](#deployment)
-- [License](#license)
+- [Validation](#validation)
+- [Acknowledgements](#acknowledgements)
+- [Credits](#credits)
+- [Author](#author)
 
 ---
 
@@ -84,9 +90,104 @@ An e-commerce platform for fresh produce delivery including fruits, vegetables, 
   - Python
   - Django
   - Prettier
-  - Live Server`
 
 - The project was version-controlled using Git and hosted on GitHub.
+---
+
+## Design Process
+
+### Overview
+The design of **Market to Your Door** was based on the principles of clarity, convenience, and trust. A clean, responsive layout ensures that users across all devices can easily browse, search, and purchase products.
+
+---
+
+### Wireframes
+Below are key wireframes created during the design phase:
+
+#### Homepage Wireframe
+![Homepage Wireframe](static/images/wireframe_main_page.jpg)
+
+#### Product Listing Page Wireframe
+![Products Page Wireframe](static/images/wireframe_products_page.jpg)
+
+#### Checkout Page Wireframe
+![Checkout Page Wireframe](static/images/wireframe_checkout_page.jpg)
+
+---
+
+### Design Reasoning
+
+- **Color Scheme**: Natural greens and neutrals were chosen to reflect the freshness and organic nature of the produce.
+![Color scheme](static/images/used_colors.jpg)
+- **Typography**: Clean sans-serif fonts improve readability across all devices.
+- **Imagery**: High-quality product images sourced from reliable datasets (Kaggle) were used to build trust and visual appeal.
+- **Layout and UX**: Simple navigation, a prominent “Shop Now” CTA, and clearly structured pages were implemented to reduce friction in the shopping experience.
+
+These decisions ensured the final UI remained intuitive, user-centric, and aligned with industry standards for e-commerce.
+
+---
+## Data Model
+
+The application uses a relational data model based on Django ORM, with the following core models and relationships:
+
+### Product & Category Models
+
+| Model      | Field Name       | Type               | Relationships / Notes                         |
+|------------|------------------|--------------------|------------------------------------------------|
+| Category   | name             | CharField          | Category name                                  |
+|            | slug             | SlugField          | Used for SEO-friendly URLs                     |
+| Product    | name             | CharField          | Product title                                  |
+|            | slug             | SlugField          | Unique slug                                    |
+|            | description      | TextField          | Product description                            |
+|            | price            | DecimalField       | With `price_unit` as choice (piece, gram, kg)  |
+|            | price_unit       | CharField          | Choices: piece, gram, kilogram                 |
+|            | image            | ImageField         | Product image                                  |
+|            | inventory        | PositiveInteger    | Inventory count                                |
+|            | category         | ForeignKey         | Linked to Category                             |
+
+---
+
+### Cart & Order Models
+
+| Model      | Field Name       | Type               | Relationships / Notes                         |
+|------------|------------------|--------------------|------------------------------------------------|
+| Order      | user             | ForeignKey         | Linked to `User`                               |
+|            | full_name        | CharField          | Customer name                                  |
+|            | email            | EmailField         | Customer email                                 |
+|            | address fields   | CharFields         | Includes address1, city, postcode, country     |
+|            | total_price      | DecimalField       | Order total                                    |
+|            | status           | CharField          | Pending, Paid, Shipped, Delivered              |
+| OrderItem  | order            | ForeignKey         | Linked to Order                                |
+|            | product          | ForeignKey         | Linked to Product                              |
+|            | quantity         | IntegerField       | Amount ordered                                 |
+
+---
+
+### User & Profile Models
+
+| Model        | Field Name     | Type           | Relationships / Notes                          |
+|--------------|----------------|----------------|-------------------------------------------------|
+| User         | (Built-in)     | -              | Managed via Django Allauth                      |
+| UserProfile  | user           | OneToOneField  | Linked to User                                  |
+|              | phone_number   | CharField      | Optional phone                                  |
+|              | address fields | CharFields     | Shipping information                            |
+|              | is_admin       | BooleanField   | Role-based permissions                          |
+
+---
+
+### Review Model
+
+| Model    | Field Name     | Type           | Relationships / Notes                          |
+|----------|----------------|----------------|-------------------------------------------------|
+| Review   | product        | ForeignKey     | Linked to Product                               |
+|          | user           | ForeignKey     | Linked to User                                  |
+|          | rating         | IntegerField   | 1–5 stars                                       |
+|          | comment        | TextField      | User review                                     |
+|          | admin_reply    | TextField      | Optional admin reply                            |
+
+---
+
+This model supports full CRUD operations, review/reply interactions, cart-to-checkout flow, and inventory control.
 
 ---
 
@@ -173,7 +274,56 @@ An e-commerce platform for fresh produce delivery including fruits, vegetables, 
 
 ---
 
+## Business Model
+
+### Business Type
+
+**Business-to-Consumer (B2C)**  
+Market to Your Door is a B2C e-commerce platform that sells fresh fruits and vegetables, directly to individual consumers via an online storefront. All interactions occur between the platform and the end user through the website.
+
+---
+
+### Target Audience
+
+Our service is aimed at individuals who value convenience, freshness, and quality in their food sourcing. The core audience includes:
+
+- **Busy Urban Families** – who need convenient and reliable grocery delivery
+- **Health-Conscious Shoppers** – who prioritize fresh and locally-sourced food
+- **Elderly or Mobility-Limited Customers** – who benefit from home delivery
+- **Environmentally-Conscious Buyers** – who seek plastic-free, fresh produce
+
+---
+
+### Customer Needs & Platform Solutions
+
+| **Customer Need**                      | **Our Solution**                                                                 |
+|----------------------------------------|----------------------------------------------------------------------------------|
+| Access to fresh fruits and vegetables  | Products are sourced from local suppliers and updated regularly                 |
+| Easy online shopping experience        | Clean UI, categorized products, search & filtering features                     |
+| Fast and secure checkout               | Stripe integration for trusted, encrypted payments                              |
+| Product trust and transparency         | Customer review system with admin replies                                       |
+
+---
+
+### Revenue Model
+
+- **Direct Product Sales**: Each item is sold individually (by piece, gram, or kilogram) via a secure checkout process.
+- **No Subscription or Recurring Billing** is currently implemented.
+
+---
+
+### Competitive Advantage
+
+- Hyperlocal focus on quality and freshness  
+- Full control and customization via a custom-built Django platform  
+- Admin-managed reviews and support  
+- Secure Stripe payment gateway integration  
+- Professionally styled user and admin interfaces
+
+---
+
 ## Marketing Strategy
+
 - SEO-optimized content and URLs
 - Newsletter with email confirmation
 - Facebook page linked in the footer
@@ -315,7 +465,7 @@ cd repository-name
 - Install dependencies and start development:
 ```bash
 python -m venv venv
-source venv/bin/activate   # or venv\Scripts\activate on Windows
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 ----
@@ -342,11 +492,10 @@ pip install -r requirements.txt
 ## Credits
 - Google for idea and content
 - Kaggle.com for photos
-- ChatGPT, Stack Overflow, YouTube for various code assistace
+- GitHub, Stack Overflow, ChatGPT, geeksforgeeks.org and YouTube for various code assistace
 ---
 
 ## Author
 
 Paul Dominan - Full Stack Developer Student
 GitHub: @pauldmnn
-
