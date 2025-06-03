@@ -97,7 +97,14 @@ An e-commerce platform for fresh produce delivery including fruits, vegetables, 
 ## Design Process
 
 ### Overview
-The design of **Market to Your Door** was based on the principles of clarity, convenience, and trust. A clean, responsive layout ensures that users across all devices can easily browse, search, and purchase products.
+
+The design of **Market to Your Door** followed an agile and user-centered approach. Agile user stories were written to define key features from the perspective of the end user. These stories helped prioritize functionality during sprints and ensured that the site met real-world needs.
+
+#### User Stories
+![User Stories](static/images/user_stories.jpg)
+
+A clean, responsive layout ensures that users across all devices can easily browse, search, and purchase products.
+This iterative planning ensured the design remained aligned with core functionality and business goals.
 
 ---
 
